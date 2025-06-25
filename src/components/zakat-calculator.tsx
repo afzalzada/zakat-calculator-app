@@ -504,7 +504,7 @@ export function ZakatCalculator() {
               <div className="space-y-4">
                 <div>
                   <p className="text-muted-foreground">Zakat Due for {form.getValues('assetType')}</p>
-                   {assetType !== 'Livestock' || result.zakatLiability > 0 ? (
+                   {selectedAssetType !== 'Livestock' || result.zakatLiability > 0 ? (
                     <p className="text-4xl font-bold text-primary">
                         ${result.zakatLiability.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
