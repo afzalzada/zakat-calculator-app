@@ -70,6 +70,8 @@ type FormValues = z.infer<typeof formSchema>
 
 const GOLD_NISAB_GRAMS = 85;
 const SILVER_NISAB_GRAMS = 595;
+const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'INR', 'SAR', 'AED', 'PKR', 'IDR', 'BDT', 'MYR'];
+
 
 const assetIcons: Record<AssetType, React.ReactNode> = {
     'Gold': <Icons.GoldBar className="w-5 h-5 text-primary" />,
@@ -99,6 +101,7 @@ const assetsWithHawl: AssetType[] = [
 
 export function ZakatCalculator() {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
+  const [currency, setCurrency] = React.useState('USD');
   const [goldPrice, setGoldPrice] = React.useState(75);
   const [silverPrice, setSilverPrice] = React.useState(1);
   const [livestockType, setLivestockType] = React.useState<LivestockType>('Sheep/Goats');
@@ -121,6 +124,20 @@ export function ZakatCalculator() {
 
   const selectedAssetType = form.watch("assetType");
   const showHawl = assetsWithHawl.includes(selectedAssetType);
+  
+  const formatCurrency = (value: number) => {
+    try {
+        return value.toLocaleString(undefined, {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        });
+    } catch (e) {
+        // Fallback for invalid currency codes if any
+        return `${currency} ${value.toFixed(2)}`;
+    }
+  };
 
   const getLivestockZakat = (count: number, type: LivestockType): string => {
     switch (type) {
@@ -171,7 +188,7 @@ export function ZakatCalculator() {
     switch (assetType) {
         case 'Gold':
             if (value < goldNisabValue) {
-                explanation = `Asset value ($${value.toFixed(2)}) is below the Gold Nisab of $${goldNisabValue.toFixed(2)}. No Zakat is due.`;
+                explanation = `Asset value (${formatCurrency(value)}) is below the Gold Nisab of ${formatCurrency(goldNisabValue)}. No Zakat is due.`;
             } else if (!hawlMet) {
                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
             } else {
@@ -181,7 +198,7 @@ export function ZakatCalculator() {
             break;
         case 'Silver':
              if (value < silverNisabValue) {
-                explanation = `Asset value ($${value.toFixed(2)}) is below the Silver Nisab of $${silverNisabValue.toFixed(2)}. No Zakat is due.`;
+                explanation = `Asset value (${formatCurrency(value)}) is below the Silver Nisab of ${formatCurrency(silverNisabValue)}. No Zakat is due.`;
             } else if (!hawlMet) {
                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
             } else {
@@ -193,7 +210,7 @@ export function ZakatCalculator() {
         case 'Investments':
         case 'Business Assets':
             if (value < cashNisab) {
-                explanation = `Asset value ($${value.toFixed(2)}) is below the Nisab of $${cashNisab.toFixed(2)} (based on gold). No Zakat is due.`;
+                explanation = `Asset value (${formatCurrency(value)}) is below the Nisab of ${formatCurrency(cashNisab)} (based on gold). No Zakat is due.`;
             } else if (!hawlMet) {
                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
             } else {
@@ -242,20 +259,25 @@ export function ZakatCalculator() {
     doc.text("Asset Type:", 20, 40);
     doc.setFont("helvetica", "normal");
     doc.text(assetType, 60, 40);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Currency:", 20, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(currency, 60, 50);
 
     doc.setFont("helvetica", "bold");
-    doc.text("Zakat Due:", 20, 50);
+    doc.text("Zakat Due:", 20, 60);
     doc.setFont("helvetica", "normal");
     const zakatDisplay = result.zakatLiability > 0 
-        ? result.zakatLiability.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        : (assetType === 'Livestock' ? 'See breakdown' : '0.00');
-    doc.text(zakatDisplay, 60, 50);
+        ? formatCurrency(result.zakatLiability)
+        : (assetType === 'Livestock' ? 'See breakdown' : formatCurrency(0));
+    doc.text(zakatDisplay, 60, 60);
 
     doc.setFont("helvetica", "bold");
-    doc.text("Calculation Breakdown:", 20, 60);
+    doc.text("Calculation Breakdown:", 20, 70);
     doc.setFont("helvetica", "normal");
     const splitText = doc.splitTextToSize(result.explanation, 170);
-    doc.text(splitText, 20, 70);
+    doc.text(splitText, 20, 80);
 
     doc.save(`zakat-summary-${assetType.toLowerCase().replace(/\\s/g, '-')}.pdf`);
   };
@@ -264,8 +286,8 @@ export function ZakatCalculator() {
     if (!result) return;
     const assetType = form.getValues('assetType');
     const zakatDisplay = result.zakatLiability > 0 
-        ? result.zakatLiability.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        : (assetType === 'Livestock' ? 'See breakdown' : '0.00');
+        ? formatCurrency(result.zakatLiability)
+        : (assetType === 'Livestock' ? 'See breakdown' : formatCurrency(0));
 
     const shareData = {
       title: "Zakat Calculation Result",
@@ -368,7 +390,7 @@ export function ZakatCalculator() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {selectedAssetType === 'Livestock' ? 'Number of Animals' : 'Asset Value'}
+                        {selectedAssetType === 'Livestock' ? 'Number of Animals' : `Asset Value in ${currency}`}
                       </FormLabel>
                       <FormControl>
                         <Input type="number" placeholder="e.g., 5000" {...field} />
@@ -477,21 +499,34 @@ export function ZakatCalculator() {
       <div className="space-y-4">
         <Card>
             <CardHeader>
-                <CardTitle>Nisab Settings</CardTitle>
+                <CardTitle>Currency & Market Prices</CardTitle>
                 <CardDescription>
-                    Update with current market prices per gram for accurate Nisab calculation.
+                    Select your local currency and enter current market prices for accuracy.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="gold-price">Gold Price / gram</Label>
-                    <Input id="gold-price" type="number" value={goldPrice} onChange={(e) => setGoldPrice(parseFloat(e.target.value) || 0)} />
-                    <p className="text-xs text-muted-foreground">Nisab Value: ${goldNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <CardContent className="space-y-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="currency">Currency</Label>
+                    <Select onValueChange={setCurrency} defaultValue={currency}>
+                        <SelectTrigger id="currency">
+                            <SelectValue placeholder="Select currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {currencies.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="silver-price">Silver Price / gram</Label>
-                    <Input id="silver-price" type="number" value={silverPrice} onChange={(e) => setSilverPrice(parseFloat(e.target.value) || 0)} />
-                    <p className="text-xs text-muted-foreground">Nisab Value: ${silverNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="gold-price">Gold Price / gram ({currency})</Label>
+                        <Input id="gold-price" type="number" value={goldPrice} onChange={(e) => setGoldPrice(parseFloat(e.target.value) || 0)} />
+                        <p className="text-xs text-muted-foreground">Nisab: {formatCurrency(goldNisabValue)}</p>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="silver-price">Silver Price / gram ({currency})</Label>
+                        <Input id="silver-price" type="number" value={silverPrice} onChange={(e) => setSilverPrice(parseFloat(e.target.value) || 0)} />
+                        <p className="text-xs text-muted-foreground">Nisab: {formatCurrency(silverNisabValue)}</p>
+                    </div>
                 </div>
             </CardContent>
         </Card>
@@ -506,10 +541,7 @@ export function ZakatCalculator() {
                   <p className="text-muted-foreground">Zakat Due for {form.getValues('assetType')}</p>
                    {selectedAssetType !== 'Livestock' || result.zakatLiability > 0 ? (
                     <p className="text-4xl font-bold text-primary">
-                        ${result.zakatLiability.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })}
+                        {formatCurrency(result.zakatLiability)}
                     </p>
                     ) : null}
                 </div>
