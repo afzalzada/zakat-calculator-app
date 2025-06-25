@@ -30,6 +30,7 @@ import {
 import { ScrollArea } from "./ui/scroll-area"
 import { Avatar, AvatarFallback } from "./ui/avatar"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/hooks/use-i18n"
 
 const formSchema = z.object({
   question: z.string().min(10, {
@@ -44,6 +45,7 @@ type Message = {
 }
 
 export function ZakatChatbot() {
+  const { t } = useI18n();
   const [messages, setMessages] = React.useState<Message[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const { toast } = useToast()
@@ -86,30 +88,30 @@ export function ZakatChatbot() {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
         <div className="bg-background border border-primary/50 p-3 rounded-lg shadow-lg hidden md:block transition-all hover:shadow-xl">
-            <p className="text-sm font-medium text-primary">Have questions? Ask our AI!</p>
+            <p className="text-sm font-medium text-primary">{t('chatbot_cta')}</p>
         </div>
         <Sheet>
             <SheetTrigger asChild>
                 <Button className="h-16 w-16 rounded-full shadow-lg" size="icon">
                     <Sparkles className="h-8 w-8" />
-                    <span className="sr-only">Open Zakat AI Assistant</span>
+                    <span className="sr-only">{t('chatbot_sr_open')}</span>
                 </Button>
             </SheetTrigger>
             <SheetContent className="flex flex-col w-full sm:max-w-md">
                 <SheetHeader>
                     <SheetTitle className="font-headline text-2xl flex items-center gap-2">
                         <Sparkles className="w-6 h-6 text-accent" />
-                        Zakat AI Assistant
+                        {t('chatbot_title')}
                     </SheetTitle>
                     <SheetDescription>
-                        Ask any question about Zakat and get an instant answer.
+                        {t('chatbot_description')}
                     </SheetDescription>
                 </SheetHeader>
                 <ScrollArea className="flex-grow pr-4 -mr-6 my-4">
                     <div className="space-y-4 py-4">
                         {messages.length === 0 && (
                              <div className="flex items-center justify-center h-full text-center text-muted-foreground p-8">
-                                <p>Ask a question like: "What is the Nisab for gold?"</p>
+                                <p>{t('chatbot_placeholder')}</p>
                             </div>
                         )}
                         {messages.map((message, index) => (
@@ -161,7 +163,7 @@ export function ZakatChatbot() {
                                 <FormItem className="flex-grow">
                                     <FormControl>
                                     <Textarea
-                                        placeholder="Ask a question..."
+                                        placeholder={t('chatbot_input_placeholder')}
                                         className="resize-none"
                                         rows={1}
                                         onKeyDown={(e) => {
@@ -181,7 +183,7 @@ export function ZakatChatbot() {
                             />
                             <Button type="submit" size="icon" disabled={isLoading || form.getValues('question').length === 0}>
                                 <Send className="h-4 w-4" />
-                                <span className="sr-only">Send</span>
+                                <span className="sr-only">{t('chatbot_sr_send')}</span>
                             </Button>
                         </form>
                     </Form>

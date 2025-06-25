@@ -19,7 +19,11 @@ export default {
       fontFamily: {
         body: ['Alegreya', 'serif'],
         headline: ['Alegreya', 'serif'],
-        code: ['monospace'],
+        arabic: ['Cairo', 'sans-serif'],
+        urdu: ['Noto Naskh Arabic', 'serif'],
+        persian: ['Noto Naskh Arabic', 'serif'],
+        hindi: ['Hind', 'sans-serif'],
+        bengali: ['Hind Siliguri', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
