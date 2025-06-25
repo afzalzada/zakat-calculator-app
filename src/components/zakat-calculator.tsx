@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, TrendingUp, Wallet, Share, Download, Leaf } from "lucide-react"
+import { Loader2, TrendingUp, Wallet, Share, Download, Leaf, Store, Gem } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -45,8 +45,10 @@ const assetTypes = [
   'Silver',
   'Cash & Savings',
   'Investments',
+  'Business Assets',
   'Livestock',
   'Agriculture',
+  'Rikaz (Treasure)',
 ] as const;
 
 const formSchema = z.object({
@@ -63,8 +65,10 @@ const assetIcons: Record<typeof assetTypes[number], React.ReactNode> = {
     'Silver': <Icons.GoldBar className="w-5 h-5 text-gray-400" />,
     'Cash & Savings': <Wallet className="w-5 h-5 text-primary" />,
     'Investments': <TrendingUp className="w-5 h-5 text-primary" />,
+    'Business Assets': <Store className="w-5 h-5 text-primary" />,
     'Livestock': <Icons.Sheep className="w-5 h-5 text-primary" />,
     'Agriculture': <Leaf className="w-5 h-5 text-primary" />,
+    'Rikaz (Treasure)': <Gem className="w-5 h-5 text-primary" />,
 }
 
 const assetNotesPlaceholders: Record<typeof assetTypes[number], string> = {
@@ -72,8 +76,10 @@ const assetNotesPlaceholders: Record<typeof assetTypes[number], string> = {
     'Silver': 'e.g., Value of 700 grams of pure silver.',
     'Cash & Savings': 'e.g., Total in bank accounts and cash on hand.',
     'Investments': 'e.g., Value of stocks, mutual funds, etc.',
+    'Business Assets': 'e.g., Value of inventory + receivables - short-term debts.',
     'Livestock': 'e.g., 40 sheep.',
     'Agriculture': 'e.g., 1000kg of wheat from rain-irrigated land.',
+    'Rikaz (Treasure)': 'e.g., Value of discovered ancient coins.',
 }
 
 export function ZakatCalculator() {

@@ -18,8 +18,10 @@ const assetTypes = [
   'Silver',
   'Cash & Savings',
   'Investments',
+  'Business Assets',
   'Livestock',
   'Agriculture',
+  'Rikaz (Treasure)',
 ] as const;
 
 const CalculateZakatForAssetInputSchema = z.object({
@@ -73,13 +75,14 @@ const calculateZakatForAssetPrompt = ai.definePrompt({
 
   Your task is to calculate the Zakat liability for this single asset. You must follow the specific rules for the given asset type according to the selected Madhab.
 
-  - For 'Gold', 'Silver', 'Cash & Savings', and 'Investments', the standard Zakat rate is 2.5% if the value is above the Nisab threshold. The Nisab is the value of 85g of gold or 595g of silver. State the assumed Nisab value you are using.
+  - For 'Gold', 'Silver', 'Cash & Savings', 'Investments', and 'Business Assets', the standard Zakat rate is 2.5% if the value is above the Nisab threshold. The Nisab is the value of 85g of gold or 595g of silver. State the assumed Nisab value you are using. For 'Business Assets', the value should be net current assets (inventory, receivables, cash) after deducting short-term liabilities.
   - For 'Agriculture' (Ushr), the Zakat rate is 10% on produce from naturally (rain) irrigated land and 5% from artificially irrigated land. The Nisab is approximately 653 kg. Use the 'notes' field to determine the irrigation type if provided.
   - For 'Livestock' (An'am), the rules are specific to the type and number of animals. For example, for sheep/goats, the Nisab is 40 animals, and the Zakat is 1 sheep for 40-120 sheep. Use the 'notes' to understand the context. The 'value' field will represent the count of animals. The Zakat liability should be expressed in terms of the number and type of animals due, and then also provide an estimated monetary value. For the purpose of the 'zakatLiability' field in the output, provide the monetary value.
+  - For 'Rikaz (Treasure)', which refers to discovered treasures or natural resources, the rate is a flat 20% of the value. There is no Nisab or one-year possession (hawl) requirement.
 
   Provide a clear and concise explanation of the calculation. This should include:
-  1. The Nisab for the asset type.
-  2. Whether the user's asset meets the Nisab.
+  1. The Nisab for the asset type (if applicable).
+  2. Whether the user's asset meets the Nisab (if applicable).
   3. The Zakat rate applied.
   4. The final calculated Zakat amount.
 
