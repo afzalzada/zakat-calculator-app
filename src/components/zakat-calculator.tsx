@@ -60,7 +60,6 @@ const formSchema = z.object({
   value: z.coerce.number().min(0, { message: "Value must be positive." }),
   notes: z.string().optional(),
   madhab: z.enum(['Hanafi', 'Maliki', 'Shafi’i', 'Hanbali']),
-  nisabMet: z.boolean().default(false),
   hawlMet: z.boolean().default(false),
 })
 
@@ -93,12 +92,6 @@ const assetsWithHawl: AssetType[] = [
   'Gold', 'Silver', 'Cash & Savings', 'Investments', 'Business Assets', 'Livestock'
 ];
 
-// Asset types that require Nisab (minimum threshold)
-const assetsWithNisab: AssetType[] = [
-  'Gold', 'Silver', 'Cash & Savings', 'Investments', 'Business Assets', 'Livestock', 'Agriculture'
-];
-
-
 export function ZakatCalculator() {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
@@ -111,14 +104,12 @@ export function ZakatCalculator() {
       value: 0,
       notes: "",
       madhab: "Hanafi",
-      nisabMet: false,
       hawlMet: false,
     },
   })
 
   const selectedAssetType = form.watch("assetType");
 
-  const showNisab = assetsWithNisab.includes(selectedAssetType);
   const showHawl = assetsWithHawl.includes(selectedAssetType);
 
   const onSubmit = async (values: FormValues) => {
@@ -127,9 +118,7 @@ export function ZakatCalculator() {
     try {
       const response = await calculateZakatForAsset({
         ...values,
-        assetType: values.assetType,
-        // Ensure values are boolean even if not shown
-        nisabMet: showNisab ? values.nisabMet : true,
+        // Hawl is not required for Agriculture or Rikaz
         hawlMet: showHawl ? values.hawlMet : true,
       });
       setResult(response)
@@ -261,29 +250,6 @@ export function ZakatCalculator() {
                     </FormItem>
                   )}
                 />
-
-                {showNisab && (
-                  <FormField
-                    control={form.control}
-                    name="nisabMet"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel>Nisab Met?</FormLabel>
-                          <FormDescription>
-                            Is your zakatable wealth above the minimum threshold?
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                )}
 
                 {showHawl && (
                   <FormField
