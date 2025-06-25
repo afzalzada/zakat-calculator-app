@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, TrendingUp, Wallet, Share, Download } from "lucide-react"
+import { Loader2, TrendingUp, Wallet, Share, Download, Leaf } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import {
-  calculateZakatLiability,
-  type CalculateZakatLiabilityOutput,
+  calculateZakatForAsset,
+  type CalculateZakatForAssetOutput,
 } from "@/ai/flows/zakat-calculation"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +22,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,38 +36,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "./icons"
 
+const assetTypes = [
+  'Gold',
+  'Silver',
+  'Cash & Savings',
+  'Investments',
+  'Livestock',
+  'Agriculture',
+] as const;
+
 const formSchema = z.object({
-  cash: z.coerce.number().min(0, { message: "Value must be positive." }),
-  gold: z.coerce.number().min(0, { message: "Value must be positive." }),
-  investments: z.coerce.number().min(0, { message: "Value must be positive." }),
+  assetType: z.enum(assetTypes),
+  value: z.coerce.number().min(0, { message: "Value must be positive." }),
+  notes: z.string().optional(),
   madhab: z.enum(['Hanafi', 'Maliki', 'Shafi’i', 'Hanbali']),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
+const assetIcons: Record<typeof assetTypes[number], React.ReactNode> = {
+    'Gold': <Icons.GoldBar className="w-5 h-5 text-primary" />,
+    'Silver': <Icons.GoldBar className="w-5 h-5 text-gray-400" />,
+    'Cash & Savings': <Wallet className="w-5 h-5 text-primary" />,
+    'Investments': <TrendingUp className="w-5 h-5 text-primary" />,
+    'Livestock': <Icons.Sheep className="w-5 h-5 text-primary" />,
+    'Agriculture': <Leaf className="w-5 h-5 text-primary" />,
+}
+
+const assetNotesPlaceholders: Record<typeof assetTypes[number], string> = {
+    'Gold': 'e.g., Value of 100 grams of 24k gold.',
+    'Silver': 'e.g., Value of 700 grams of pure silver.',
+    'Cash & Savings': 'e.g., Total in bank accounts and cash on hand.',
+    'Investments': 'e.g., Value of stocks, mutual funds, etc.',
+    'Livestock': 'e.g., 40 sheep.',
+    'Agriculture': 'e.g., 1000kg of wheat from rain-irrigated land.',
+}
+
 export function ZakatCalculator() {
-  const [result, setResult] = React.useState<CalculateZakatLiabilityOutput | null>(null)
+  const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      cash: 0,
-      gold: 0,
-      investments: 0,
+      assetType: "Gold",
+      value: 0,
+      notes: "",
       madhab: "Hanafi",
     },
   })
+
+  const selectedAssetType = form.watch("assetType");
 
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true)
     setResult(null)
     try {
-      const response = await calculateZakatLiability(values)
+      const response = await calculateZakatForAsset({
+        ...values,
+        assetType: values.assetType,
+      });
       setResult(response)
     } catch (error) {
       console.error(error)
@@ -86,7 +120,7 @@ export function ZakatCalculator() {
         <CardHeader>
           <CardTitle className="font-headline text-3xl">Zakat Calculator</CardTitle>
           <CardDescription>
-            Enter your asset values to calculate your Zakat.
+            Select an asset type to calculate your Zakat.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -95,12 +129,39 @@ export function ZakatCalculator() {
               <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="cash"
+                  name="assetType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Wallet className="w-5 h-5 text-primary" />
-                        Cash & Savings
+                      <FormLabel>Asset Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an asset type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {assetTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                                <div className="flex items-center gap-2">
+                                    {assetIcons[type]}
+                                    {type}
+                                </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {selectedAssetType === 'Livestock' ? 'Number of Animals' : 'Asset Value'}
                       </FormLabel>
                       <FormControl>
                         <Input type="number" placeholder="e.g., 5000" {...field} />
@@ -109,38 +170,24 @@ export function ZakatCalculator() {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
-                  name="gold"
+                  name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Icons.GoldBar className="w-5 h-5 text-primary" />
-                        Gold & Silver Value
-                      </FormLabel>
+                      <FormLabel>Additional Notes (Optional)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g., 10000" {...field} />
+                        <Textarea placeholder={assetNotesPlaceholders[selectedAssetType]} {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Provide details like livestock type, or irrigation method for agriculture.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="investments"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-primary" />
-                        Investments & Stocks
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="e.g., 15000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
                 <FormField
                   control={form.control}
                   name="madhab"
@@ -189,7 +236,7 @@ export function ZakatCalculator() {
             {result && !isLoading && (
               <div className="space-y-4">
                 <div>
-                  <p className="text-muted-foreground">Total Zakat Due</p>
+                  <p className="text-muted-foreground">Zakat Due for {form.getValues('assetType')}</p>
                   <p className="text-4xl font-bold text-primary">
                     {result.zakatLiability.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
