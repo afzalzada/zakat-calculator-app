@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
+import { ZakatChatbot } from '@/components/zakat-chatbot';
 
 export const metadata: Metadata = {
   title: 'Calculate My Zakaat',
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background">
         {children}
+        <ZakatChatbot />
         <Toaster />
       </body>
     </html>
