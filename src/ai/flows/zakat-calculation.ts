@@ -40,6 +40,8 @@ const CalculateZakatForAssetInputSchema = z.object({
   madhab: z
     .enum(['Hanafi', 'Maliki', 'Shafi’i', 'Hanbali'])
     .describe('The Madhab to follow for Zakat calculation rules.'),
+  nisabMet: z.boolean().describe('Whether the Nisab threshold has been met by the user.'),
+  hawlMet: z.boolean().describe('Whether the Hawl (one lunar year of possession) has been completed.'),
 });
 export type CalculateZakatForAssetInput = z.infer<typeof CalculateZakatForAssetInputSchema>;
 
@@ -69,22 +71,31 @@ const calculateZakatForAssetPrompt = ai.definePrompt({
   - Asset Type: {{{assetType}}}
   - Value / Count: {{{value}}}
   - Madhab: {{{madhab}}}
+  - User claims Nisab is met: {{{nisabMet}}}
+  - User claims Hawl (1 Year) is met: {{{hawlMet}}}
   {{#if notes}}
   - Additional Notes: {{{notes}}}
   {{/if}}
 
-  Your task is to calculate the Zakat liability for this single asset. You must follow the specific rules for the given asset type according to the selected Madhab.
+  Your task is to calculate the Zakat liability for this single asset based on the user's input.
 
-  - For 'Gold', 'Silver', 'Cash & Savings', 'Investments', and 'Business Assets', the standard Zakat rate is 2.5% if the value is above the Nisab threshold. The Nisab is the value of 85g of gold or 595g of silver. State the assumed Nisab value you are using. For 'Business Assets', the value should be net current assets (inventory, receivables, cash) after deducting short-term liabilities.
+  - First, analyze the conditions. If 'nisabMet' is false for any asset that requires it, Zakat is not due. The zakatLiability must be 0, and the explanation should state this is the reason.
+  - If 'hawlMet' is false for assets that require it (Gold, Silver, Cash, Investments, Business Assets, Livestock), Zakat is not due. The zakatLiability must be 0, and the explanation should state this is the reason.
+  - Note: 'Agriculture' and 'Rikaz (Treasure)' do not have a Hawl requirement. Their Zakat is due upon harvest/discovery if Nisab is met (for Agriculture). 'Rikaz' has no Nisab requirement.
+
+  If Zakat is due based on the conditions being met:
+  - For 'Gold', 'Silver', 'Cash & Savings', 'Investments', and 'Business Assets', the standard Zakat rate is 2.5%. State the assumed Nisab value you are using for confirmation. For 'Business Assets', the value should be net current assets (inventory, receivables, cash) after deducting short-term liabilities.
   - For 'Agriculture' (Ushr), the Zakat rate is 10% on produce from naturally (rain) irrigated land and 5% from artificially irrigated land. The Nisab is approximately 653 kg. Use the 'notes' field to determine the irrigation type if provided.
   - For 'Livestock' (An'am), the rules are specific to the type and number of animals. For example, for sheep/goats, the Nisab is 40 animals, and the Zakat is 1 sheep for 40-120 sheep. Use the 'notes' to understand the context. The 'value' field will represent the count of animals. The Zakat liability should be expressed in terms of the number and type of animals due, and then also provide an estimated monetary value. For the purpose of the 'zakatLiability' field in the output, provide the monetary value.
-  - For 'Rikaz (Treasure)', which refers to discovered treasures or natural resources, the rate is a flat 20% of the value. There is no Nisab or one-year possession (hawl) requirement.
+  - For 'Rikaz (Treasure)', the rate is a flat 20% of the value. There is no Nisab or Hawl requirement.
 
-  Provide a clear and concise explanation of the calculation. This should include:
-  1. The Nisab for the asset type (if applicable).
-  2. Whether the user's asset meets the Nisab (if applicable).
-  3. The Zakat rate applied.
-  4. The final calculated Zakat amount.
+  Provide a clear and concise explanation for the result.
+  - If Zakat is not due, explain which condition (Nisab or Hawl) was not met.
+  - If Zakat is due, your explanation should include:
+    1. The Nisab for the asset type (if applicable).
+    2. Confirmation that the user's wealth meets the conditions.
+    3. The Zakat rate applied.
+    4. The final calculated Zakat amount.
 
   Return the total zakatLiability (as a number, without currency symbols) and a detailed explanation.
   `,

@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "./icons"
@@ -51,16 +52,20 @@ const assetTypes = [
   'Rikaz (Treasure)',
 ] as const;
 
+type AssetType = typeof assetTypes[number];
+
 const formSchema = z.object({
   assetType: z.enum(assetTypes),
   value: z.coerce.number().min(0, { message: "Value must be positive." }),
   notes: z.string().optional(),
   madhab: z.enum(['Hanafi', 'Maliki', 'Shafi’i', 'Hanbali']),
+  nisabMet: z.boolean().default(false),
+  hawlMet: z.boolean().default(false),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
-const assetIcons: Record<typeof assetTypes[number], React.ReactNode> = {
+const assetIcons: Record<AssetType, React.ReactNode> = {
     'Gold': <Icons.GoldBar className="w-5 h-5 text-primary" />,
     'Silver': <Icons.GoldBar className="w-5 h-5 text-gray-400" />,
     'Cash & Savings': <Wallet className="w-5 h-5 text-primary" />,
@@ -71,7 +76,7 @@ const assetIcons: Record<typeof assetTypes[number], React.ReactNode> = {
     'Rikaz (Treasure)': <Gem className="w-5 h-5 text-primary" />,
 }
 
-const assetNotesPlaceholders: Record<typeof assetTypes[number], string> = {
+const assetNotesPlaceholders: Record<AssetType, string> = {
     'Gold': 'e.g., Value of 100 grams of 24k gold.',
     'Silver': 'e.g., Value of 700 grams of pure silver.',
     'Cash & Savings': 'e.g., Total in bank accounts and cash on hand.',
@@ -81,6 +86,17 @@ const assetNotesPlaceholders: Record<typeof assetTypes[number], string> = {
     'Agriculture': 'e.g., 1000kg of wheat from rain-irrigated land.',
     'Rikaz (Treasure)': 'e.g., Value of discovered ancient coins.',
 }
+
+// Asset types that require Hawl (1 year possession)
+const assetsWithHawl: AssetType[] = [
+  'Gold', 'Silver', 'Cash & Savings', 'Investments', 'Business Assets', 'Livestock'
+];
+
+// Asset types that require Nisab (minimum threshold)
+const assetsWithNisab: AssetType[] = [
+  'Gold', 'Silver', 'Cash & Savings', 'Investments', 'Business Assets', 'Livestock', 'Agriculture'
+];
+
 
 export function ZakatCalculator() {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
@@ -94,10 +110,15 @@ export function ZakatCalculator() {
       value: 0,
       notes: "",
       madhab: "Hanafi",
+      nisabMet: false,
+      hawlMet: false,
     },
   })
 
   const selectedAssetType = form.watch("assetType");
+
+  const showNisab = assetsWithNisab.includes(selectedAssetType);
+  const showHawl = assetsWithHawl.includes(selectedAssetType);
 
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true)
@@ -106,6 +127,9 @@ export function ZakatCalculator() {
       const response = await calculateZakatForAsset({
         ...values,
         assetType: values.assetType,
+        // Ensure values are boolean even if not shown
+        nisabMet: showNisab ? values.nisabMet : true,
+        hawlMet: showHawl ? values.hawlMet : true,
       });
       setResult(response)
     } catch (error) {
@@ -126,7 +150,7 @@ export function ZakatCalculator() {
         <CardHeader>
           <CardTitle className="font-headline text-3xl">Zakat Calculator</CardTitle>
           <CardDescription>
-            Select an asset type to calculate your Zakat.
+            Select an asset type and conditions to calculate your Zakat.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -176,6 +200,52 @@ export function ZakatCalculator() {
                     </FormItem>
                   )}
                 />
+
+                {showNisab && (
+                  <FormField
+                    control={form.control}
+                    name="nisabMet"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Nisab Met?</FormLabel>
+                          <FormDescription>
+                            Is your zakatable wealth above the minimum threshold?
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {showHawl && (
+                  <FormField
+                    control={form.control}
+                    name="hawlMet"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Hawl Completed?</FormLabel>
+                          <FormDescription>
+                            Have you possessed this wealth for one lunar year?
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
