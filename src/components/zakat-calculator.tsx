@@ -519,7 +519,7 @@ export function ZakatCalculator() {
             <CardHeader>
                 <CardTitle>Currency & Market Prices</CardTitle>
                 <CardDescription>
-                    Select your local currency and enter current market prices for accuracy.
+                    For accurate calculations, select your currency and update the gold/silver prices to reflect current market rates. Default values are provided as an estimate.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
