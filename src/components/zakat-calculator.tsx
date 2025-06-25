@@ -323,15 +323,15 @@ export function ZakatCalculator() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
       <Card>
-        <CardHeader>
+        <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
           <CardTitle className="font-headline text-3xl">{t('calculator_title')}</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-primary-foreground/90">
             {t('calculator_description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -497,13 +497,13 @@ export function ZakatCalculator() {
       </Card>
       <div className="space-y-4">
         <Card>
-            <CardHeader>
+            <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
                 <CardTitle>{t('market_prices_title')}</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-primary-foreground/90">
                     {t('market_prices_description')}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
                  <div className="space-y-2">
                     <Label htmlFor="currency">{t('currency_label')}</Label>
                     <Select onValueChange={setCurrency} defaultValue={currency}>
@@ -530,16 +530,16 @@ export function ZakatCalculator() {
             </CardContent>
         </Card>
         <Card className="min-h-[300px] flex flex-col">
-          <CardHeader>
+          <CardHeader className="bg-chart-2 text-primary-foreground rounded-t-lg">
             <CardTitle className="font-headline text-2xl">{t('result_title')}</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow">
+          <CardContent className="flex-grow pt-6">
             {result && (
               <div className="space-y-4">
                 <div>
                   <p className="text-muted-foreground">{t('result_due_for', { asset: t('asset_' + form.getValues('assetType')) })}</p>
                    {selectedAssetType !== 'livestock' || result.zakatLiability > 0 ? (
-                    <p className="text-4xl font-bold text-primary">
+                    <p className="text-4xl font-bold text-chart-2">
                         {formatCurrency(result.zakatLiability)}
                     </p>
                     ) : null}
@@ -578,3 +578,5 @@ export function ZakatCalculator() {
     </div>
   )
 }
+
+    
