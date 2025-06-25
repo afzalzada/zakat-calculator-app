@@ -42,7 +42,7 @@ export default function RootLayout({
     <I18nProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
-            <title>Calculate My Zakaat</title>
+            <title>Zakat Calculator</title>
             <meta name="description" content="An intelligent Zakat calculator and guide." />
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -1,6 +1,6 @@
 
 {
-  "appTitle": "मेरी ज़कात की गणना करें",
+  "appTitle": "ज़कात कैलकुलेटर",
   "appDescription": "आपकी ज़कात दायित्वों के लिए एक बुद्धिमान सहायक।",
   "supportTitle": "इस परियोजना का समर्थन करें",
   "supportDescription": "यह ऐप मुफ़्त, विज्ञापन-मुक्त है, और उम्मा के लिए बनाया गया है।",
@@ -36,7 +36,7 @@
   "agri_artificial": "कृत्रिम रूप से सिंचित (5%)",
   "notes_label": "अतिरिक्त नोट्स (वैकल्पिक)",
   "notes_placeholder_gold": "अपने सोने का वजन ग्राम में दर्ज करें।",
-  "notes_placeholder_silver": "अपनी चांदी का वजन ग्राम में दर्ज करें।",
+  "notes_placeholder_silver": " अपनी चांदी का वजन ग्राम में दर्ज करें।",
   "notes_placeholder_cash": "उदा., बैंक खातों में कुल और हाथ में नकद।",
   "notes_placeholder_investments": "उदा., स्टॉक, म्यूचुअल फंड, आदि का मूल्य।",
   "notes_placeholder_business": "उदा., इन्वेंट्री का मूल्य + प्राप्य - अल्पकालिक ऋण।",
@@ -81,5 +81,3 @@
   "chatbot_input_placeholder": "एक प्रश्न पूछें...",
   "chatbot_sr_send": "भेजें"
 }
-
-    
