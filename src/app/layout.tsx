@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -51,6 +52,8 @@ export default function RootLayout({
             <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
             <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;700&display=swap" rel="stylesheet" />
             <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Pashto:wght@400;700&display=swap" rel="stylesheet" />
+
         </head>
         <AppBody>
           {children}
@@ -59,3 +62,5 @@ export default function RootLayout({
     </I18nProvider>
   );
 }
+
+    

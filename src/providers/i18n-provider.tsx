@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
@@ -18,9 +19,10 @@ export const locales = [
     { code: 'en', name: 'English', dir: 'ltr', fontClass: 'font-body' },
     { code: 'ar', name: 'العربية', dir: 'rtl', fontClass: 'font-arabic' },
     { code: 'ur', name: 'اردو', dir: 'rtl', fontClass: 'font-urdu' },
+    { code: 'ps', name: 'پښتو', dir: 'rtl', fontClass: 'font-pashto' },
+    { code: 'fa', name: 'فارسی', dir: 'rtl', fontClass: 'font-persian' },
     { code: 'hi', name: 'हिन्दी', dir: 'ltr', fontClass: 'font-hindi' },
     { code: 'bn', name: 'বাংলা', dir: 'ltr', fontClass: 'font-bengali' },
-    { code: 'fa', name: 'فارسی', dir: 'rtl', fontClass: 'font-persian' },
 ] as const;
 
 export type LocaleCode = typeof locales[number]['code'];
@@ -74,3 +76,5 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     </I18nContext.Provider>
   );
 };
+
+    

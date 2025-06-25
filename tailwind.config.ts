@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -24,6 +25,7 @@ export default {
         persian: ['Noto Naskh Arabic', 'serif'],
         hindi: ['Hind', 'sans-serif'],
         bengali: ['Hind Siliguri', 'sans-serif'],
+        pashto: ['Noto Sans Pashto', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -98,3 +100,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    
