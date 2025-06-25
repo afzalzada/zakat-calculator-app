@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { jsPDF } from "jspdf"
 import { Loader2, TrendingUp, Wallet, Share, Download, Leaf, Store, Gem } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -143,6 +144,66 @@ export function ZakatCalculator() {
       setIsLoading(false)
     }
   }
+
+  const handleExportPdf = () => {
+    if (!result) return;
+    const doc = new jsPDF();
+    const assetType = form.getValues('assetType');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Zakat Calculation Summary", 105, 20, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Asset Type:", 20, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(assetType, 60, 40);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Zakat Due:", 20, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(result.zakatLiability.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }), 60, 50);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Calculation Breakdown:", 20, 60);
+    doc.setFont("helvetica", "normal");
+    const splitText = doc.splitTextToSize(result.explanation, 170);
+    doc.text(splitText, 20, 70);
+
+    doc.save(`zakat-summary-${assetType.toLowerCase().replace(/\\s/g, '-')}.pdf`);
+  };
+
+  const handleShare = async () => {
+    if (!result) return;
+    const assetType = form.getValues('assetType');
+    const shareData = {
+      title: "Zakat Calculation Result",
+      text: `Zakat result for ${assetType}:\n\nZakat Due: ${result.zakatLiability.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\n${result.explanation}`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.text);
+        toast({
+          title: "Copied to Clipboard",
+          description: "Calculation results have been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+      console.error("Sharing failed", error);
+      toast({
+        variant: "destructive",
+        title: "Sharing Failed",
+        description: "Could not share or copy the results.",
+      });
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
@@ -336,11 +397,11 @@ export function ZakatCalculator() {
           </CardContent>
           {result && !isLoading && (
             <CardFooter className="flex gap-2">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleExportPdf}>
                 <Download className="mr-2 h-4 w-4" />
                 Export PDF
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleShare}>
                 <Share className="mr-2 h-4 w-4" />
                 Share
               </Button>
