@@ -84,10 +84,13 @@ export function ZakatChatbot() {
   }
 
   return (
-    <>
+    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        <div className="bg-background border border-primary/50 p-3 rounded-lg shadow-lg hidden md:block transition-all hover:shadow-xl">
+            <p className="text-sm font-medium text-primary">Have questions? Ask our AI!</p>
+        </div>
         <Sheet>
             <SheetTrigger asChild>
-                <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-50" size="icon">
+                <Button className="h-16 w-16 rounded-full shadow-lg" size="icon">
                     <Sparkles className="h-8 w-8" />
                     <span className="sr-only">Open Zakat AI Assistant</span>
                 </Button>
@@ -185,6 +188,6 @@ export function ZakatChatbot() {
                 </div>
             </SheetContent>
         </Sheet>
-    </>
+    </div>
   )
 }
