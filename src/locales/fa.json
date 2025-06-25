@@ -1,3 +1,4 @@
+
 {
   "appTitle": "محاسبه زکات من",
   "appDescription": "یک دستیار هوشمند برای واجبات زکات شما.",
@@ -28,7 +29,7 @@
   "weight_in_grams_label": "وزن به گرم",
   "number_of_animals_label": "تعداد حیوانات",
   "asset_value_in_currency_label": "ارزش دارایی به {{currency}}",
-  "hawl_completed_label": "حول کامل شده است؟",
+  "hawl_completed_label": "حول کامل شده است؟ (سال)",
   "hawl_description": "آیا این ثروت را برای یک سال قمری کامل در اختیار داشته‌اید؟",
   "irrigation_method_label": "روش آبیاری",
   "agri_rain_fed": "دیم (۱۰٪)",
@@ -80,3 +81,5 @@
   "chatbot_input_placeholder": "سوالی بپرسید...",
   "chatbot_sr_send": "ارسال"
 }
+
+    

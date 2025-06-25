@@ -1,3 +1,4 @@
+
 {
   "appTitle": "Calculate My Zakaat",
   "appDescription": "An intelligent assistant for your Zakat obligations.",
@@ -28,7 +29,7 @@
   "weight_in_grams_label": "Weight in Grams",
   "number_of_animals_label": "Number of Animals",
   "asset_value_in_currency_label": "Asset Value in {{currency}}",
-  "hawl_completed_label": "Hawl Completed?",
+  "hawl_completed_label": "Hawl Completed? (Year)",
   "hawl_description": "Have you possessed this wealth for one lunar year?",
   "irrigation_method_label": "Irrigation Method",
   "agri_rain_fed": "Rain-fed (10%)",
@@ -117,3 +118,5 @@
   "livestock_camels_10": "2 three-year-old she-camels (Hiqqah)",
   "livestock_camels_11": "For every 40, one Bint Labun; for every 50, one Hiqqah. Consult a scholar for the exact combination."
 }
+
+    

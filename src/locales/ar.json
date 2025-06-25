@@ -1,3 +1,4 @@
+
 {
   "appTitle": "احسب زكاتي",
   "appDescription": "مساعد ذكي لالتزامات الزكاة الخاصة بك.",
@@ -28,12 +29,12 @@
   "weight_in_grams_label": "الوزن بالجرام",
   "number_of_animals_label": "عدد الحيوانات",
   "asset_value_in_currency_label": "قيمة الأصل بالـ {{currency}}",
-  "hawl_completed_label": "هل حال الحول؟",
+  "hawl_completed_label": "هل حال الحول؟ (سنة)",
   "hawl_description": "هل امتلكت هذا المال لمدة سنة هجرية كاملة؟",
   "irrigation_method_label": "طريقة الري",
   "agri_rain_fed": "بعلي (10%)",
   "agri_artificial": "مروي (5%)",
-  "notes_label": "ملاحظات إضافية (اختياري)",
+  "notes_label": "ملاحظات إضافية (اختیاری)",
   "notes_placeholder_gold": "أدخل وزن الذهب بالجرام.",
   "notes_placeholder_silver": "أدخل وزن الفضة بالجرام.",
   "notes_placeholder_cash": "مثال: الإجمالي في الحسابات البنكية والنقد.",
@@ -117,3 +118,5 @@
   "livestock_camels_10": "حقتان",
   "livestock_camels_11": "لكل 40 بنت لبون، ولكل 50 حقة. استشر عالماً للتوليفة الدقيقة."
 }
+
+    

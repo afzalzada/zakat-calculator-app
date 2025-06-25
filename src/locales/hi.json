@@ -1,3 +1,4 @@
+
 {
   "appTitle": "मेरी ज़कात की गणना करें",
   "appDescription": "आपकी ज़कात दायित्वों के लिए एक बुद्धिमान सहायक।",
@@ -28,7 +29,7 @@
   "weight_in_grams_label": "ग्राम में वजन",
   "number_of_animals_label": "जानवरों की संख्या",
   "asset_value_in_currency_label": "{{currency}} में संपत्ति का मूल्य",
-  "hawl_completed_label": "हौल पूरा हो गया?",
+  "hawl_completed_label": "हौल पूरा हो गया? (वर्ष)",
   "hawl_description": "क्या आपने इस धन को एक चंद्र वर्ष तक अपने पास रखा है?",
   "irrigation_method_label": "सिंचाई की विधि",
   "agri_rain_fed": "वर्षा-सिंचित (10%)",
@@ -80,3 +81,5 @@
   "chatbot_input_placeholder": "एक प्रश्न पूछें...",
   "chatbot_sr_send": "भेजें"
 }
+
+    
