@@ -53,7 +53,7 @@ export default function Home() {
 
       <footer className="text-center mt-12 text-sm text-muted-foreground">
         <p>Built with care for the Muslim community.</p>
-        <p>&copy; {new Date().getFullYear()} Calculate My Zakaat. All Rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} AfzalApps. All Rights Reserved.</p>
       </footer>
     </main>
   );
