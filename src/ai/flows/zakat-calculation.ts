@@ -1,9 +1,7 @@
 // src/ai/flows/zakat-calculation.ts
 'use server';
 /**
- * @fileOverview Zakat liability calculation flow for a specific asset type.
- * It takes an asset type, its value, optional notes, and a Madhab selection,
- * and calculates the Zakat liability based on the specific rules for that asset.
+ * @fileOverview Zakat liability calculation flow. This flow is kept for potential future use or for very complex cases, but the primary calculation logic has been moved to the client-side for better performance and offline access.
  *
  * - calculateZakatForAsset - A function that initiates the Zakat calculation process for a single asset.
  * - CalculateZakatForAssetInput - The input type for the calculateZakatForAsset function.
@@ -65,8 +63,8 @@ const calculateZakatForAssetPrompt = ai.definePrompt({
   input: {schema: CalculateZakatForAssetInputSchema},
   output: {schema: CalculateZakatForAssetOutputSchema},
   prompt: `You are an expert in Islamic finance, specializing in Zakat calculation according to different Madhabs.
+  The user has provided some information and requires a detailed explanation or calculation for a complex case that couldn't be handled on the client-side.
 
-  A user wants to calculate Zakat for a specific asset.
   - Asset Type: {{{assetType}}}
   - Value / Count: {{{value}}}
   - Madhab: {{{madhab}}}
@@ -75,33 +73,13 @@ const calculateZakatForAssetPrompt = ai.definePrompt({
   - Additional Notes: {{{notes}}}
   {{/if}}
 
-  Your task is to calculate the Zakat liability for this single asset based on the user's input.
+  Your task is to provide a clear explanation based on the provided data. The primary calculation is now done on the client. Use this flow to handle edge cases or provide deeper fiqhi explanations based on the notes.
 
-  IMPORTANT: For 'Gold', 'Silver', 'Cash & Savings', 'Investments', and 'Business Assets', the Nisab threshold has already been checked and verified on the client side. You can assume it has been met. Your role is to proceed directly with the calculation and provide a clear explanation.
+  For example, if the user asks a question in the notes like "My business assets include intellectual property, how is that valued?", you should provide an answer.
 
-  For 'Livestock' and 'Agriculture', you still need to determine if the Nisab is met based on the details provided in 'value' (count) and 'notes'.
-  - For 'Agriculture', the Nisab is approximately 653 kg of produce. You should evaluate if the provided 'value' (which could be monetary value or quantity) meets this threshold.
-  - For 'Livestock' (An'am), the rules are specific to the type and number of animals. For example, for sheep/goats, the Nisab is 40 animals.
-  - If Nisab is not met for these types, zakatLiability must be 0 and the explanation should state why.
+  Focus on the details provided in the 'notes' field to give a comprehensive answer.
 
-  'Rikaz (Treasure)' has no Nisab requirement.
-
-  Next, analyze the Hawl condition. If 'hawlMet' is false for assets that require it (Gold, Silver, Cash, Investments, Business Assets, Livestock), Zakat is not due. The zakatLiability must be 0, and the explanation should state this is the reason. Note: 'Agriculture' and 'Rikaz (Treasure)' do not have a Hawl requirement.
-
-  If Zakat is due:
-  - For 'Gold', 'Silver', 'Cash & Savings', 'Investments', and 'Business Assets', apply the standard Zakat rate of 2.5%. For 'Business Assets', the value should be net current assets.
-  - For 'Agriculture' (Ushr), the Zakat rate is 10% on produce from naturally (rain) irrigated land and 5% from artificially irrigated land. Use the 'notes' field to determine the irrigation type.
-  - For 'Livestock' (An'am), the rules are specific to the type and number of animals. For example, for sheep/goats, the Zakat is 1 sheep for 40-120 sheep. The 'value' field represents the count of animals. The Zakat liability should be an estimated monetary value.
-  - For 'Rikaz (Treasure)', the rate is a flat 20% of the value.
-
-  Provide a clear and concise explanation for the result.
-  - If Zakat is not due, explain which condition (Nisab or Hawl) was not met.
-  - If Zakat is due, your explanation should include:
-    1. Confirmation that Nisab and Hawl (if applicable) were met. Even for assets where Nisab was pre-checked, briefly mention it as a fulfilled condition.
-    2. The Zakat rate applied.
-    3. The final calculated Zakat amount.
-
-  Return the total zakatLiability (as a number, without currency symbols) and a detailed explanation.
+  Return a zakatLiability of 0 and use the 'explanation' field to provide your detailed answer.
   `,
 });
 
@@ -112,6 +90,8 @@ const calculateZakatForAssetFlow = ai.defineFlow(
     outputSchema: CalculateZakatForAssetOutputSchema,
   },
   async input => {
+    // This flow is now a fallback for complex cases.
+    // The main logic is on the client.
     const {output} = await calculateZakatForAssetPrompt(input);
     return output!;
   }

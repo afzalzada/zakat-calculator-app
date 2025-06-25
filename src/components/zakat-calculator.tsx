@@ -4,14 +4,11 @@
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { jsPDF } from "jspdf"
-import { Loader2, TrendingUp, Wallet, Share, Download, Leaf, Store, Gem } from "lucide-react"
+import { TrendingUp, Wallet, Share, Download, Leaf, Store, Gem } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import {
-  calculateZakatForAsset,
-  type CalculateZakatForAssetOutput,
-} from "@/ai/flows/zakat-calculation"
+import type { CalculateZakatForAssetOutput } from "@/ai/flows/zakat-calculation"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -43,6 +40,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "./icons"
 import { Label } from "./ui/label"
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
+
 
 const assetTypes = [
   'Gold',
@@ -56,6 +55,8 @@ const assetTypes = [
 ] as const;
 
 type AssetType = typeof assetTypes[number];
+type LivestockType = 'Sheep/Goats' | 'Cattle' | 'Camels';
+type AgriType = 'rain-fed' | 'artificially-irrigated';
 
 const formSchema = z.object({
   assetType: z.enum(assetTypes),
@@ -87,21 +88,21 @@ const assetNotesPlaceholders: Record<AssetType, string> = {
     'Cash & Savings': 'e.g., Total in bank accounts and cash on hand.',
     'Investments': 'e.g., Value of stocks, mutual funds, etc.',
     'Business Assets': 'e.g., Value of inventory + receivables - short-term debts.',
-    'Livestock': 'e.g., 40 sheep.',
-    'Agriculture': 'e.g., 1000kg of wheat from rain-irrigated land.',
+    'Livestock': 'Enter the number of animals in the value field.',
+    'Agriculture': 'Enter the total value of your harvest.',
     'Rikaz (Treasure)': 'e.g., Value of discovered ancient coins.',
 }
 
-// Asset types that require Hawl (1 year possession)
 const assetsWithHawl: AssetType[] = [
   'Gold', 'Silver', 'Cash & Savings', 'Investments', 'Business Assets', 'Livestock'
 ];
 
 export function ZakatCalculator() {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
-  const [isLoading, setIsLoading] = React.useState(false)
   const [goldPrice, setGoldPrice] = React.useState(75);
   const [silverPrice, setSilverPrice] = React.useState(1);
+  const [livestockType, setLivestockType] = React.useState<LivestockType>('Sheep/Goats');
+  const [agriType, setAgriType] = React.useState<AgriType>('rain-fed');
   const { toast } = useToast()
 
   const goldNisabValue = GOLD_NISAB_GRAMS * goldPrice;
@@ -121,60 +122,110 @@ export function ZakatCalculator() {
   const selectedAssetType = form.watch("assetType");
   const showHawl = assetsWithHawl.includes(selectedAssetType);
 
-  const onSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setResult(null);
-
-    // Client-side Nisab check for applicable assets
-    const assetsWithGoldNisab = ['Cash & Savings', 'Investments', 'Business Assets'];
-    let nisabMet = true;
-    let nisabValue = 0;
-    let nisabType = '';
-    let isNisabClientChecked = false;
-
-    if (values.assetType === 'Gold') {
-        nisabMet = values.value >= goldNisabValue;
-        nisabValue = goldNisabValue;
-        nisabType = 'gold';
-        isNisabClientChecked = true;
-    } else if (values.assetType === 'Silver') {
-        nisabMet = values.value >= silverNisabValue;
-        nisabValue = silverNisabValue;
-        nisabType = 'silver';
-        isNisabClientChecked = true;
-    } else if (assetsWithGoldNisab.includes(values.assetType)) {
-        nisabMet = values.value >= goldNisabValue;
-        nisabValue = goldNisabValue;
-        nisabType = 'gold';
-        isNisabClientChecked = true;
+  const getLivestockZakat = (count: number, type: LivestockType): string => {
+    switch (type) {
+        case 'Sheep/Goats':
+            if (count < 40) return "0";
+            if (count <= 120) return "1 sheep";
+            if (count <= 200) return "2 sheep";
+            if (count <= 399) return "3 sheep";
+            return `${Math.floor(count / 100)} sheep`;
+        case 'Cattle':
+            if (count < 30) return "0";
+            if (count <= 39) return "1 one-year-old calf (Tabi')";
+            if (count <= 59) return "1 two-year-old cow (Musinnah)";
+            if (count <= 69) return "2 one-year-old calves (Tabi')";
+            if (count <= 79) return "1 Tabi' and 1 Musinnah";
+            if (count <= 89) return "2 Musinnah";
+            if (count <= 99) return "3 Tabi'";
+            if (count <= 119) return "1 Musinnah and 2 Tabi'";
+            if (count >= 120) {
+                const musinnahs = Math.floor(count / 40);
+                const tabis = Math.floor((count % 40) / 30);
+                return `${musinnahs} Musinnah and ${tabis} Tabi'`;
+            }
+            return "Calculation for this number is complex, please consult a scholar.";
+        case 'Camels':
+            if (count < 5) return "0";
+            if (count <= 9) return "1 sheep";
+            if (count <= 14) return "2 sheep";
+            if (count <= 19) return "3 sheep";
+            if (count <= 24) return "4 sheep";
+            if (count <= 35) return "1 one-year-old she-camel (Bint Makhad)";
+            if (count <= 45) return "1 two-year-old she-camel (Bint Labun)";
+            if (count <= 60) return "1 three-year-old she-camel (Hiqqah)";
+            if (count <= 75) return "1 four-year-old she-camel (Jadh'ah)";
+            if (count <= 90) return "2 two-year-old she-camels (Bint Labun)";
+            if (count <= 120) return "2 three-year-old she-camels (Hiqqah)";
+            if (count > 120) return "For every 40, one Bint Labun; for every 50, one Hiqqah. Consult a scholar for the exact combination."
+            return "0";
     }
-    
-    // If Nisab is checked on client and not met, show result immediately.
-    if (isNisabClientChecked && !nisabMet) {
-        setResult({
-            zakatLiability: 0,
-            explanation: `The value of your asset (${values.value.toLocaleString()}) is below the Nisab threshold of ${nisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (based on the ${nisabType} price). Therefore, no Zakat is due.`
-        });
-        setIsLoading(false);
-        return;
+  }
+
+  const onSubmit = (values: FormValues) => {
+    const { assetType, value, hawlMet } = values;
+    let zakatLiability = 0;
+    let explanation = "";
+    const cashNisab = goldNisabValue;
+
+    switch (assetType) {
+        case 'Gold':
+            if (value < goldNisabValue) {
+                explanation = `Asset value ($${value.toFixed(2)}) is below the Gold Nisab of $${goldNisabValue.toFixed(2)}. No Zakat is due.`;
+            } else if (!hawlMet) {
+                explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
+            } else {
+                zakatLiability = value * 0.025;
+                explanation = `Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.`;
+            }
+            break;
+        case 'Silver':
+             if (value < silverNisabValue) {
+                explanation = `Asset value ($${value.toFixed(2)}) is below the Silver Nisab of $${silverNisabValue.toFixed(2)}. No Zakat is due.`;
+            } else if (!hawlMet) {
+                explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
+            } else {
+                zakatLiability = value * 0.025;
+                explanation = `Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.`;
+            }
+            break;
+        case 'Cash & Savings':
+        case 'Investments':
+        case 'Business Assets':
+            if (value < cashNisab) {
+                explanation = `Asset value ($${value.toFixed(2)}) is below the Nisab of $${cashNisab.toFixed(2)} (based on gold). No Zakat is due.`;
+            } else if (!hawlMet) {
+                explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
+            } else {
+                zakatLiability = value * 0.025;
+                explanation = `Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.`;
+            }
+            break;
+        case 'Livestock':
+            const animalCount = Math.floor(value);
+            const zakatDueInAnimals = getLivestockZakat(animalCount, livestockType);
+            zakatLiability = 0; // Monetary value is not calculated here.
+            if (zakatDueInAnimals === "0") {
+                explanation = `The number of animals (${animalCount}) is below the Nisab for ${livestockType}. No Zakat is due.`;
+            } else if (!hawlMet) {
+                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
+            }
+            else {
+                explanation = `For ${animalCount} ${livestockType}, the Zakat due is: ${zakatDueInAnimals}.\n\nNote: This is a non-monetary calculation. Please consult a scholar for the monetary equivalent if you wish to pay in cash.`;
+            }
+            break;
+        case 'Agriculture':
+            const rate = agriType === 'rain-fed' ? 0.10 : 0.05;
+            zakatLiability = value * rate;
+            explanation = `Zakat on agricultural produce (Ushr) does not have a Hawl requirement and is calculated on the harvest value. The rate is ${rate * 100}% for ${agriType} land. Nisab for agriculture is approx. 653kg; it's assumed your harvest exceeds this.`;
+            break;
+        case 'Rikaz (Treasure)':
+            zakatLiability = value * 0.20;
+            explanation = `Zakat on Rikaz (found treasure) is a flat rate of 20%, with no Nisab or Hawl requirement.`;
+            break;
     }
 
-    try {
-      const response = await calculateZakatForAsset({
-        ...values,
-        hawlMet: showHawl ? values.hawlMet : true,
-      });
-      setResult(response)
-    } catch (error) {
-      console.error(error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to calculate Zakat. Please try again.",
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    setResult({ zakatLiability, explanation });
   }
 
   const handleExportPdf = () => {
@@ -195,10 +246,10 @@ export function ZakatCalculator() {
     doc.setFont("helvetica", "bold");
     doc.text("Zakat Due:", 20, 50);
     doc.setFont("helvetica", "normal");
-    doc.text(result.zakatLiability.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }), 60, 50);
+    const zakatDisplay = result.zakatLiability > 0 
+        ? result.zakatLiability.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : (assetType === 'Livestock' ? 'See breakdown' : '0.00');
+    doc.text(zakatDisplay, 60, 50);
 
     doc.setFont("helvetica", "bold");
     doc.text("Calculation Breakdown:", 20, 60);
@@ -212,9 +263,13 @@ export function ZakatCalculator() {
   const handleShare = async () => {
     if (!result) return;
     const assetType = form.getValues('assetType');
+    const zakatDisplay = result.zakatLiability > 0 
+        ? result.zakatLiability.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : (assetType === 'Livestock' ? 'See breakdown' : '0.00');
+
     const shareData = {
       title: "Zakat Calculation Result",
-      text: `Zakat result for ${assetType}:\n\nZakat Due: ${result.zakatLiability.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\n${result.explanation}`,
+      text: `Zakat result for ${assetType}:\n\nZakat Due: ${zakatDisplay}\n\n${result.explanation}`,
       url: window.location.href,
     };
 
@@ -222,7 +277,6 @@ export function ZakatCalculator() {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // If share API is not supported, go straight to clipboard.
         await navigator.clipboard.writeText(shareData.text);
         toast({
           title: "Copied to Clipboard",
@@ -230,14 +284,9 @@ export function ZakatCalculator() {
         });
       }
     } catch (error) {
-      // Don't show an error if the user simply cancelled the share dialog.
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log('Share cancelled by user.');
         return;
       }
-
-      console.error("Sharing failed, trying to copy to clipboard instead:", error);
-      // Fallback to clipboard if sharing fails for other reasons.
       try {
         await navigator.clipboard.writeText(shareData.text);
         toast({
@@ -245,7 +294,6 @@ export function ZakatCalculator() {
           description: "Sharing didn't work, so we copied the results to your clipboard.",
         });
       } catch (copyError) {
-        console.error("Fallback to clipboard also failed:", copyError);
         toast({
           variant: "destructive",
           title: "Sharing Failed",
@@ -296,6 +344,24 @@ export function ZakatCalculator() {
                   )}
                 />
 
+                {selectedAssetType === 'Livestock' && (
+                    <FormItem>
+                        <FormLabel>Livestock Type</FormLabel>
+                        <Select onValueChange={(value) => setLivestockType(value as LivestockType)} defaultValue={livestockType}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select livestock type" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="Sheep/Goats">Sheep/Goats</SelectItem>
+                                <SelectItem value="Cattle">Cattle</SelectItem>
+                                <SelectItem value="Camels">Camels</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </FormItem>
+                )}
+
                 <FormField
                   control={form.control}
                   name="value"
@@ -335,6 +401,28 @@ export function ZakatCalculator() {
                   />
                 )}
 
+                {selectedAssetType === 'Agriculture' && (
+                    <FormItem>
+                        <FormLabel>Irrigation Method</FormLabel>
+                        <FormControl>
+                            <RadioGroup onValueChange={(value) => setAgriType(value as AgriType)} defaultValue={agriType} className="flex pt-2 gap-6">
+                                <FormItem className="flex items-center space-x-2">
+                                    <FormControl>
+                                        <RadioGroupItem value="rain-fed" id="rain-fed" />
+                                    </FormControl>
+                                    <Label htmlFor="rain-fed" className="font-normal cursor-pointer">Rain-fed (10%)</Label>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-2">
+                                    <FormControl>
+                                        <RadioGroupItem value="artificially-irrigated" id="artificially-irrigated" />
+                                    </FormControl>
+                                    <Label htmlFor="artificially-irrigated" className="font-normal cursor-pointer">Artificially Irrigated (5%)</Label>
+                                </FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                    </FormItem>
+                )}
+
                 <FormField
                   control={form.control}
                   name="notes"
@@ -345,7 +433,7 @@ export function ZakatCalculator() {
                         <Textarea placeholder={assetNotesPlaceholders[selectedAssetType]} {...field} />
                       </FormControl>
                       <FormDescription>
-                        Provide details like livestock type, or irrigation method for agriculture.
+                        For complex scenarios, please provide details.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -371,15 +459,15 @@ export function ZakatCalculator() {
                           <SelectItem value="Hanbali">Hanbali</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormDescription>
+                        Note: Madhab selection primarily affects fiqhi details in the Q&A. Core calculation rules are standard.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+              <Button type="submit" className="w-full">
                 Calculate Zakat
               </Button>
             </form>
@@ -398,12 +486,12 @@ export function ZakatCalculator() {
                 <div className="space-y-2">
                     <Label htmlFor="gold-price">Gold Price / gram</Label>
                     <Input id="gold-price" type="number" value={goldPrice} onChange={(e) => setGoldPrice(parseFloat(e.target.value) || 0)} />
-                    <p className="text-xs text-muted-foreground">Nisab Value: {goldNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <p className="text-xs text-muted-foreground">Nisab Value: ${goldNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="silver-price">Silver Price / gram</Label>
                     <Input id="silver-price" type="number" value={silverPrice} onChange={(e) => setSilverPrice(parseFloat(e.target.value) || 0)} />
-                    <p className="text-xs text-muted-foreground">Nisab Value: {silverNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <p className="text-xs text-muted-foreground">Nisab Value: ${silverNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
             </CardContent>
         </Card>
@@ -412,21 +500,18 @@ export function ZakatCalculator() {
             <CardTitle className="font-headline text-2xl">Your Zakat Liability</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
-            {isLoading && (
-              <div className="flex items-center justify-center h-full">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            )}
-            {result && !isLoading && (
+            {result && (
               <div className="space-y-4">
                 <div>
                   <p className="text-muted-foreground">Zakat Due for {form.getValues('assetType')}</p>
-                  <p className="text-4xl font-bold text-primary">
-                    {result.zakatLiability.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
+                   {assetType !== 'Livestock' || result.zakatLiability > 0 ? (
+                    <p className="text-4xl font-bold text-primary">
+                        ${result.zakatLiability.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
+                    </p>
+                    ) : null}
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Calculation Breakdown</h4>
@@ -436,13 +521,13 @@ export function ZakatCalculator() {
                 </div>
               </div>
             )}
-            {!result && !isLoading && (
+            {!result && (
               <div className="flex items-center justify-center h-full text-center text-muted-foreground">
                 <p>Your calculation results will appear here.</p>
               </div>
             )}
           </CardContent>
-          {result && !isLoading && (
+          {result && (
             <CardFooter className="flex gap-2">
               <Button variant="outline" className="w-full" onClick={handleExportPdf}>
                 <Download className="mr-2 h-4 w-4" />
@@ -462,5 +547,3 @@ export function ZakatCalculator() {
     </div>
   )
 }
-
-    
