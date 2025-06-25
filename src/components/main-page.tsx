@@ -46,7 +46,7 @@ export function MainPage() {
       </section>
 
       <section>
-        <Card className="max-w-4xl mx-auto bg-secondary/50 border-primary/20">
+        <Card className="max-w-4xl mx-auto border-primary/20">
             <CardHeader className="items-center text-center bg-primary text-primary-foreground rounded-t-lg">
                 <CardTitle className="font-headline text-3xl">{t('supportTitle')}</CardTitle>
                 <CardDescription className="text-primary-foreground/90">
