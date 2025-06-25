@@ -16,27 +16,25 @@ export function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
 
   return (
-    <div className="flex items-center justify-center">
-        <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-            <Languages className="mr-2 h-4 w-4" />
-            {locales.find(l => l.code === locale)?.name}
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center">
-            {locales.map((l) => (
-            <DropdownMenuItem
-                key={l.code}
-                onClick={() => setLocale(l.code)}
-                className="justify-between"
-            >
-                {l.name}
-                {locale === l.code && <Check className="ml-2 h-4 w-4" />}
-            </DropdownMenuItem>
-            ))}
-        </DropdownMenuContent>
-        </DropdownMenu>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <Languages className="mr-2 h-4 w-4" />
+          {locales.find((l) => l.code === locale)?.name}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {locales.map((l) => (
+          <DropdownMenuItem
+            key={l.code}
+            onClick={() => setLocale(l.code)}
+            className="justify-between"
+          >
+            {l.name}
+            {locale === l.code && <Check className="ml-2 h-4 w-4" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

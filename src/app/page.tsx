@@ -13,16 +13,22 @@ export default function Home() {
 
   return (
     <main className="container mx-auto p-4 md:p-8 space-y-12">
-      <header className="text-center mb-8">
-        <div className="flex items-center justify-center gap-4 mb-2">
-            <Icons.Logo className="w-12 h-12 text-primary" />
-            <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
-                {t('appTitle')}
-            </h1>
+      <header className="relative mb-8">
+        <div className="absolute top-0 right-0 z-10">
+          <LanguageSwitcher />
         </div>
-        <p className="text-lg text-muted-foreground">
-          {t('appDescription')}
-        </p>
+        
+        <div className="text-center pt-14 md:pt-0">
+          <div className="flex items-center justify-center gap-4 mb-2">
+              <Icons.Logo className="w-12 h-12 text-primary" />
+              <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
+                  {t('appTitle')}
+              </h1>
+          </div>
+          <p className="text-lg text-muted-foreground">
+            {t('appDescription')}
+          </p>
+        </div>
       </header>
 
       <section>
@@ -57,7 +63,6 @@ export default function Home() {
       </section>
 
       <footer className="text-center mt-12 text-sm text-muted-foreground space-y-4">
-        <LanguageSwitcher />
         <p>{t('footerBuiltWithCare')}</p>
         <p>&copy; {new Date().getFullYear()} AfzalApps. {t('footerAllRightsReserved')}</p>
       </footer>
