@@ -103,8 +103,8 @@ const assetIcons: Record<AssetType, React.ReactNode> = {
 }
 
 const assetNotesPlaceholders: Record<AssetType, string> = {
-    'Gold': 'e.g., Value of 100 grams of 24k gold.',
-    'Silver': 'e.g., Value of 700 grams of pure silver.',
+    'Gold': 'Enter the weight of your gold in grams.',
+    'Silver': 'Enter the weight of your silver in grams.',
     'Cash & Savings': 'e.g., Total in bank accounts and cash on hand.',
     'Investments': 'e.g., Value of stocks, mutual funds, etc.',
     'Business Assets': 'e.g., Value of inventory + receivables - short-term debts.',
@@ -205,23 +205,27 @@ export function ZakatCalculator() {
 
     switch (assetType) {
         case 'Gold':
-            if (value < goldNisabValue) {
-                explanation = `Asset value (${formatCurrency(value)}) is below the Gold Nisab of ${formatCurrency(goldNisabValue)}. No Zakat is due.`;
+            const goldWeight = value;
+            const totalGoldValue = goldWeight * goldPrice;
+            if (goldWeight < GOLD_NISAB_GRAMS) {
+                explanation = `Your gold possession (${goldWeight}g) is below the Nisab threshold of ${GOLD_NISAB_GRAMS}g. No Zakat is due.`;
             } else if (!hawlMet) {
                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
             } else {
-                zakatLiability = value * 0.025;
-                explanation = `Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.`;
+                zakatLiability = totalGoldValue * 0.025;
+                explanation = `Nisab and Hawl are met. The total value of your gold is ${formatCurrency(totalGoldValue)}. Zakat is calculated at 2.5% of this value.`;
             }
             break;
         case 'Silver':
-             if (value < silverNisabValue) {
-                explanation = `Asset value (${formatCurrency(value)}) is below the Silver Nisab of ${formatCurrency(silverNisabValue)}. No Zakat is due.`;
+            const silverWeight = value;
+            const totalSilverValue = silverWeight * silverPrice;
+            if (silverWeight < SILVER_NISAB_GRAMS) {
+                explanation = `Your silver possession (${silverWeight}g) is below the Nisab threshold of ${SILVER_NISAB_GRAMS}g. No Zakat is due.`;
             } else if (!hawlMet) {
                 explanation = `The Hawl (one lunar year) has not been met. No Zakat is due.`;
             } else {
-                zakatLiability = value * 0.025;
-                explanation = `Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.`;
+                zakatLiability = totalSilverValue * 0.025;
+                explanation = `Nisab and Hawl are met. The total value of your silver is ${formatCurrency(totalSilverValue)}. Zakat is calculated at 2.5% of this value.`;
             }
             break;
         case 'Cash & Savings':
@@ -408,10 +412,14 @@ export function ZakatCalculator() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {selectedAssetType === 'Livestock' ? 'Number of Animals' : `Asset Value in ${currency}`}
+                        {selectedAssetType === 'Gold' || selectedAssetType === 'Silver'
+                          ? 'Weight in Grams'
+                          : selectedAssetType === 'Livestock'
+                          ? 'Number of Animals'
+                          : `Asset Value in ${currency}`}
                       </FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g., 5000" {...field} />
+                        <Input type="number" placeholder="e.g., 100" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
