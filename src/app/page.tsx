@@ -30,13 +30,13 @@ export default function Home() {
 
       <section>
         <Card className="max-w-4xl mx-auto bg-secondary/50 border-primary/20">
-            <CardHeader className="items-center text-center">
+            <CardHeader className="items-center text-center bg-primary text-primary-foreground rounded-t-lg">
                 <CardTitle className="font-headline text-3xl">Support This Project</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-primary-foreground/90">
                     This app is free, ad-free, and built for the Ummah.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
+            <CardContent className="text-center space-y-4 pt-6">
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                     As an individual developer, your support helps cover server costs and allows me to continue improving this tool for our community. Your contribution, no matter how small, is deeply appreciated.
                 </p>
