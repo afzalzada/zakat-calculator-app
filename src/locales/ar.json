@@ -29,7 +29,7 @@
   "weight_in_grams_label": "الوزن بالجرام",
   "number_of_animals_label": "عدد الحيوانات",
   "asset_value_in_currency_label": "قيمة الأصل بالـ {{currency}}",
-  "hawl_completed_label": "هل حال الحول؟ (سنة)",
+  "hawl_completed_label": "هل حال الحول (سنة)؟",
   "hawl_description": "هل امتلكت هذا المال لمدة سنة هجرية كاملة؟",
   "irrigation_method_label": "طريقة الري",
   "agri_rain_fed": "بعلي (10%)",
