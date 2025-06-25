@@ -22,7 +22,7 @@ export function Faq() {
 
   return (
     <Card className="max-w-4xl mx-auto">
-        <CardHeader>
+        <CardHeader className="items-center text-center bg-primary text-primary-foreground rounded-t-lg">
             <CardTitle className="font-headline text-3xl">{t('faq_title')}</CardTitle>
         </CardHeader>
         <CardContent>
