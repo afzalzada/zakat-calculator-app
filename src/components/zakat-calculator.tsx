@@ -41,6 +41,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Icons } from "./icons"
+import { Label } from "./ui/label"
 
 const assetTypes = [
   'Gold',
@@ -64,6 +65,9 @@ const formSchema = z.object({
 })
 
 type FormValues = z.infer<typeof formSchema>
+
+const GOLD_NISAB_GRAMS = 85;
+const SILVER_NISAB_GRAMS = 595;
 
 const assetIcons: Record<AssetType, React.ReactNode> = {
     'Gold': <Icons.GoldBar className="w-5 h-5 text-primary" />,
@@ -95,7 +99,12 @@ const assetsWithHawl: AssetType[] = [
 export function ZakatCalculator() {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
+  const [goldPrice, setGoldPrice] = React.useState(75);
+  const [silverPrice, setSilverPrice] = React.useState(1);
   const { toast } = useToast()
+
+  const goldNisabValue = GOLD_NISAB_GRAMS * goldPrice;
+  const silverNisabValue = SILVER_NISAB_GRAMS * silverPrice;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -109,16 +118,49 @@ export function ZakatCalculator() {
   })
 
   const selectedAssetType = form.watch("assetType");
-
   const showHawl = assetsWithHawl.includes(selectedAssetType);
 
   const onSubmit = async (values: FormValues) => {
-    setIsLoading(true)
-    setResult(null)
+    setIsLoading(true);
+    setResult(null);
+
+    // Client-side Nisab check for applicable assets
+    const assetsWithGoldNisab = ['Cash & Savings', 'Investments', 'Business Assets'];
+    let nisabMet = true;
+    let nisabValue = 0;
+    let nisabType = '';
+    let isNisabClientChecked = false;
+
+    if (values.assetType === 'Gold') {
+        nisabMet = values.value >= goldNisabValue;
+        nisabValue = goldNisabValue;
+        nisabType = 'gold';
+        isNisabClientChecked = true;
+    } else if (values.assetType === 'Silver') {
+        nisabMet = values.value >= silverNisabValue;
+        nisabValue = silverNisabValue;
+        nisabType = 'silver';
+        isNisabClientChecked = true;
+    } else if (assetsWithGoldNisab.includes(values.assetType)) {
+        nisabMet = values.value >= goldNisabValue;
+        nisabValue = goldNisabValue;
+        nisabType = 'gold';
+        isNisabClientChecked = true;
+    }
+    
+    // If Nisab is checked on client and not met, show result immediately.
+    if (isNisabClientChecked && !nisabMet) {
+        setResult({
+            zakatLiability: 0,
+            explanation: `The value of your asset (${values.value.toLocaleString()}) is below the Nisab threshold of ${nisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (based on the ${nisabType} price). Therefore, no Zakat is due.`
+        });
+        setIsLoading(false);
+        return;
+    }
+
     try {
       const response = await calculateZakatForAsset({
         ...values,
-        // Hawl is not required for Agriculture or Rikaz
         hawlMet: showHawl ? values.hawlMet : true,
       });
       setResult(response)
@@ -326,6 +368,26 @@ export function ZakatCalculator() {
         </CardContent>
       </Card>
       <div className="space-y-4">
+        <Card>
+            <CardHeader>
+                <CardTitle>Nisab Settings</CardTitle>
+                <CardDescription>
+                    Update with current market prices per gram for accurate Nisab calculation.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="gold-price">Gold Price / gram</Label>
+                    <Input id="gold-price" type="number" value={goldPrice} onChange={(e) => setGoldPrice(parseFloat(e.target.value) || 0)} />
+                    <p className="text-xs text-muted-foreground">Nisab Value: {goldNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="silver-price">Silver Price / gram</Label>
+                    <Input id="silver-price" type="number" value={silverPrice} onChange={(e) => setSilverPrice(parseFloat(e.target.value) || 0)} />
+                    <p className="text-xs text-muted-foreground">Nisab Value: {silverNisabValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+            </CardContent>
+        </Card>
         <Card className="min-h-[300px] flex flex-col">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Your Zakat Liability</CardTitle>
