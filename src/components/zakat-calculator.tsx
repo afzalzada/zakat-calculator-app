@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -216,10 +217,12 @@ export function ZakatCalculator() {
       text: `Zakat result for ${assetType}:\n\nZakat Due: ${result.zakatLiability.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\n${result.explanation}`,
       url: window.location.href,
     };
+
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
+        // If share API is not supported, go straight to clipboard.
         await navigator.clipboard.writeText(shareData.text);
         toast({
           title: "Copied to Clipboard",
@@ -227,12 +230,28 @@ export function ZakatCalculator() {
         });
       }
     } catch (error) {
-      console.error("Sharing failed", error);
-      toast({
-        variant: "destructive",
-        title: "Sharing Failed",
-        description: "Could not share or copy the results.",
-      });
+      // Don't show an error if the user simply cancelled the share dialog.
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log('Share cancelled by user.');
+        return;
+      }
+
+      console.error("Sharing failed, trying to copy to clipboard instead:", error);
+      // Fallback to clipboard if sharing fails for other reasons.
+      try {
+        await navigator.clipboard.writeText(shareData.text);
+        toast({
+          title: "Copied to Clipboard",
+          description: "Sharing didn't work, so we copied the results to your clipboard.",
+        });
+      } catch (copyError) {
+        console.error("Fallback to clipboard also failed:", copyError);
+        toast({
+          variant: "destructive",
+          title: "Sharing Failed",
+          description: "Could not share or copy the results.",
+        });
+      }
     }
   };
 
@@ -443,3 +462,5 @@ export function ZakatCalculator() {
     </div>
   )
 }
+
+    
