@@ -53,12 +53,12 @@ export function MainPage() {
                     {t('supportDescription')}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="text-center space-y-4 pt-6">
+            <CardContent className="text-center space-y-4 pt-6 bg-card">
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                     {t('supportMessage')}
                 </p>
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <a href="https://bitpay.com/pay/YOUR_BITPAY_ID" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=YOUR_PAYPAL_ID" target="_blank" rel="noopener noreferrer">
                         <Heart className="mr-2 h-5 w-5" />
                         {t('donateButton')}
                     </a>
