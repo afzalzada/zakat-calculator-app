@@ -45,6 +45,8 @@ export default function RootLayout({
         <head>
             <title>Zakat Calculator</title>
             <meta name="description" content="An intelligent Zakat calculator and guide." />
+            <link rel="manifest" href="/manifest.json" />
+            <meta name="theme-color" content="#3F51B5" />
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&display=swap" rel="stylesheet" />
@@ -62,5 +64,3 @@ export default function RootLayout({
     </I18nProvider>
   );
 }
-
-    
