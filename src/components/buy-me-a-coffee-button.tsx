@@ -7,6 +7,14 @@ export function BuyMeACoffeeButton() {
     const script = document.createElement('script');
     script.src = "https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js";
     script.async = true;
+    script.onload = () => {
+      // The script has a global object it uses to initialize buttons
+      const bmc = (window as any).Cofeed;
+      if (bmc) {
+        bmc.init('Buy me a coffee', '#FFDD00', 'afzalzada');
+      }
+    };
+    
     script.setAttribute('data-name', 'bmc-button');
     script.setAttribute('data-slug', 'afzalzada');
     script.setAttribute('data-color', '#FFDD00');
@@ -20,18 +28,21 @@ export function BuyMeACoffeeButton() {
     document.head.appendChild(script);
 
     return () => {
-      // Clean up the script when the component unmounts
-      // This is important to avoid memory leaks and duplicate scripts
+      // Clean up the script and the widget it creates to prevent memory leaks
       const existingScript = document.querySelector(`script[src="${script.src}"]`);
       if (existingScript) {
         document.head.removeChild(existingScript);
       }
-      // The script might also create a global object we need to clean up
-      if ((window as any).Cofeed) {
+      
+      const bmcWidget = document.getElementById('bmc-wbtn');
+      if (bmcWidget) {
+        bmcWidget.remove();
+      }
+       if ((window as any).Cofeed) {
         delete (window as any).Cofeed;
       }
     };
   }, []);
 
-  return <a className="bmc-button" target="_blank" href="https://www.buymeacoffee.com/afzalzada"></a>;
+  return <a className="bmc-button" target="_blank" rel="noopener noreferrer" href="https://www.buymeacoffee.com/afzalzada"></a>;
 }
