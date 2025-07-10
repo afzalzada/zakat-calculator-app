@@ -114,5 +114,12 @@
   "livestock_camels_8": "1 four-year-old she-camel (Jadh'ah)",
   "livestock_camels_9": "2 two-year-old she-camels (Bint Labun)",
   "livestock_camels_10": "2 three-year-old she-camels (Hiqqah)",
-  "livestock_camels_11": "For every 40, one Bint Labun; for every 50, one Hiqqah. Consult a scholar for the exact combination."
+  "livestock_camels_11": "For every 40, one Bint Labun; for every 50, one Hiqqah. Consult a scholar for the exact combination.",
+  "copied_to_clipboard_title": "Copied to Clipboard",
+  "copied_to_clipboard_description": "Calculation results have been copied to your clipboard.",
+  "share_failed_copy_description": "Sharing didn't work, so we copied the results to your clipboard.",
+  "share_failed_title": "Sharing Failed",
+  "share_failed_description": "Could not share or copy the results."
 }
+
+    

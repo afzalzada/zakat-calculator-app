@@ -114,5 +114,12 @@
   "livestock_camels_8": "جذعة (ناقة عمرها أربع سنوات)",
   "livestock_camels_9": "بنتا لبون",
   "livestock_camels_10": "حقتان",
-  "livestock_camels_11": "لكل 40 بنت لبون، ولكل 50 حقة. استشر عالماً للتوليفة الدقيقة."
+  "livestock_camels_11": "لكل 40 بنت لبون، ولكل 50 حقة. استشر عالماً للتوليفة الدقيقة.",
+  "copied_to_clipboard_title": "تم النسخ إلى الحافظة",
+  "copied_to_clipboard_description": "تم نسخ نتائج الحساب إلى حافظتك.",
+  "share_failed_copy_description": "لم تنجح المشاركة، لذلك قمنا بنسخ النتائج إلى حافظتك.",
+  "share_failed_title": "فشلت المشاركة",
+  "share_failed_description": "تعذرت مشاركة أو نسخ النتائج."
 }
+
+    

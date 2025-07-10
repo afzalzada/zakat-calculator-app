@@ -73,46 +73,24 @@ const GOLD_NISAB_GRAMS = 85;
 const SILVER_NISAB_GRAMS = 595;
 
 const currencies = [
-    // Major World Currencies
     'USD', // US Dollar
     'EUR', // Euro
     'GBP', // British Pound
     'CAD', // Canadian Dollar
     'AUD', // Australian Dollar
-    'CHF', // Swiss Franc
-    'JPY', // Japanese Yen
-    'CNY', // Chinese Yuan
-    
-    // Currencies from Muslim-Majority Countries
-    'AED', // UAE Dirham
-    'AFN', // Afghan Afghani
-    'BDT', // Bangladeshi Taka
-    'BHD', // Bahraini Dinar
-    'BND', // Brunei Dollar
-    'DZD', // Algerian Dinar
-    'EGP', // Egyptian Pound
-    'IDR', // Indonesian Rupiah
-    'IQD', // Iraqi Dinar
-    'JOD', // Jordanian Dinar
-    'KWD', // Kuwaiti Dinar
-    'KZT', // Kazakhstani Tenge
-    'LBP', // Lebanese Pound
-    'LYD', // Libyan Dinar
-    'MAD', // Moroccan Dirham
-    'MVR', // Maldivian Rufiyaa
-    'MYR', // Malaysian Ringgit
-    'NGN', // Nigerian Naira
-    'OMR', // Omani Rial
-    'PKR', // Pakistani Rupee
-    'QAR', // Qatari Riyal
     'SAR', // Saudi Riyal
-    'SDG', // Sudanese Pound
-    'SOS', // Somali Shilling
-    'SYP', // Syrian Pound
-    'TND', // Tunisian Dinar
+    'AED', // UAE Dirham
+    'QAR', // Qatari Riyal
+    'KWD', // Kuwaiti Dinar
+    'BHD', // Bahraini Dinar
+    'OMR', // Omani Rial
     'TRY', // Turkish Lira
-    'UZS', // Uzbekistani Som
-    'YER', // Yemeni Rial
+    'PKR', // Pakistani Rupee
+    'BDT', // Bangladeshi Taka
+    'INR', // Indian Rupee
+    'IDR', // Indonesian Rupiah
+    'MYR', // Malaysian Ringgit
+    'AFN', // Afghan Afghani
 ];
 
 
@@ -320,8 +298,8 @@ export function ZakatCalculator() {
       } else {
         await navigator.clipboard.writeText(shareData.text);
         toast({
-          title: "Copied to Clipboard",
-          description: "Calculation results have been copied to your clipboard.",
+          title: t('copied_to_clipboard_title'),
+          description: t('copied_to_clipboard_description'),
         });
       }
     } catch (error) {
@@ -331,14 +309,14 @@ export function ZakatCalculator() {
       try {
         await navigator.clipboard.writeText(shareData.text);
         toast({
-          title: "Copied to Clipboard",
-          description: "Sharing didn't work, so we copied the results to your clipboard.",
+          title: t('copied_to_clipboard_title'),
+          description: t('share_failed_copy_description'),
         });
       } catch (copyError) {
         toast({
           variant: "destructive",
-          title: "Sharing Failed",
-          description: "Could not share or copy the results.",
+          title: t('share_failed_title'),
+          description: t('share_failed_description'),
         });
       }
     }
@@ -604,3 +582,5 @@ export function ZakatCalculator() {
     </div>
   )
 }
+
+    
