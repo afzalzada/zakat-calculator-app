@@ -18,10 +18,8 @@ const BuyMeACoffeeButton = () => {
     script.setAttribute('data-font-color', '#000000');
     script.setAttribute('data-coffee-color', '#ffffff');
     
-    // Find the container and append the script
     const container = document.getElementById('bmc-button-container');
     if (container) {
-      // Clear previous script if any
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
@@ -29,7 +27,6 @@ const BuyMeACoffeeButton = () => {
     }
 
     return () => {
-      // Clean up the script when the component unmounts
       if (container && script.parentNode === container) {
         container.removeChild(script);
       }
