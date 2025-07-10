@@ -58,7 +58,7 @@ export function MainPage() {
                     {t('supportMessage')}
                 </p>
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=YOUR_PAYPAL_ID" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.paypal.com/donate?business=atiqullah_amiry@hotmail.com&no_recurring=0&item_name=Support+Zakat+Calculator&currency_code=USD" target="_blank" rel="noopener noreferrer">
                         <Heart className="mr-2 h-5 w-5" />
                         {t('donateButton')}
                     </a>
