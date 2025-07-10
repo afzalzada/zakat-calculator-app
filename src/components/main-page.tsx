@@ -6,7 +6,7 @@ import { ZakatCalculator } from "@/components/zakat-calculator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/hooks/use-i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { BuyMeACoffeeButton } from './buy-me-a-coffee-button';
+import BuyMeACoffeeButton from './buy-me-a-coffee-button';
 
 export function MainPage() {
   const { t } = useI18n();

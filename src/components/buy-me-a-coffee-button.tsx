@@ -3,19 +3,11 @@
 
 import React, { useEffect } from 'react';
 
-export function BuyMeACoffeeButton() {
+const BuyMeACoffeeButton = () => {
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = "https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js";
+    script.src = 'https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js';
     script.async = true;
-    script.onload = () => {
-      // The script has a global object it uses to initialize buttons
-      const bmc = (window as any).Cofeed;
-      if (bmc) {
-        bmc.init('Buy me a coffee', '#FFDD00', 'afzalzada');
-      }
-    };
-    
     script.setAttribute('data-name', 'bmc-button');
     script.setAttribute('data-slug', 'afzalzada');
     script.setAttribute('data-color', '#FFDD00');
@@ -26,24 +18,25 @@ export function BuyMeACoffeeButton() {
     script.setAttribute('data-font-color', '#000000');
     script.setAttribute('data-coffee-color', '#ffffff');
     
-    document.head.appendChild(script);
+    // Find the container and append the script
+    const container = document.getElementById('bmc-button-container');
+    if (container) {
+      // Clear previous script if any
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      container.appendChild(script);
+    }
 
     return () => {
-      // Clean up the script and the widget it creates to prevent memory leaks
-      const existingScript = document.querySelector(`script[src="${script.src}"]`);
-      if (existingScript) {
-        document.head.removeChild(existingScript);
-      }
-      
-      const bmcWidget = document.getElementById('bmc-wbtn');
-      if (bmcWidget) {
-        bmcWidget.remove();
-      }
-       if ((window as any).Cofeed) {
-        delete (window as any).Cofeed;
+      // Clean up the script when the component unmounts
+      if (container && script.parentNode === container) {
+        container.removeChild(script);
       }
     };
   }, []);
 
-  return <a className="bmc-button" target="_blank" rel="noopener noreferrer" href="https://www.buymeacoffee.com/afzalzada"></a>;
-}
+  return <div id="bmc-button-container"></div>;
+};
+
+export default BuyMeACoffeeButton;
