@@ -135,7 +135,7 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     setResult(null);
   }, [selectedAssetType, t, form, setResult]);
   
-  const formatCurrency = (value: number) => {
+  const formatCurrency = React.useCallback((value: number) => {
     try {
         return value.toLocaleString(undefined, {
         style: 'currency',
@@ -146,9 +146,9 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     } catch (e) {
         return `${currency} ${value.toFixed(2)}`;
     }
-  };
+  }, [currency]);
 
-  const getLivestockZakat = (count: number, type: LivestockType): string => {
+  const getLivestockZakat = React.useCallback((count: number, type: LivestockType): string => {
     switch (type) {
         case 'sheep_goats':
             if (count < 40) return t('livestock_result_none');
@@ -186,9 +186,9 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
             if (count > 120) return t('livestock_camels_11');
             return t('livestock_result_none');
     }
-  }
+  }, [t]);
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = React.useCallback((values: FormValues) => {
     const { assetType, value, hawlMet } = values;
     let zakatLiability = 0;
     let explanation = "";
@@ -267,7 +267,17 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     }
 
     setResult({ zakatLiability, explanation });
-  }
+  }, [t, formatCurrency, getLivestockZakat, livestockType, agriType]);
+
+  React.useEffect(() => {
+    // Recalculate if the currency changes and there's already a result.
+    if (result && form.formState.isSubmitted) {
+      onSubmit(form.getValues());
+    }
+    // We only want this to run when `currency` changes, so we disable the exhaustive-deps rule.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency]);
+
 
   const handleExportPdf = () => {
     if (!result) return;
