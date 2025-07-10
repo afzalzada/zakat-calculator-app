@@ -114,6 +114,8 @@
   "share_failed_copy_description": "لم تنجح المشاركة، لذلك قمنا بنسخ النتائج إلى حافظتك.",
   "share_failed_title": "فشلت المشاركة",
   "share_failed_description": "تعذرت مشاركة أو نسخ النتائج.",
-  "enter_value_prompt": "يرجى إدخال قيمة لحساب الزكاة."
+  "enter_value_prompt": "يرجى إدخال قيمة لحساب الزكاة.",
+  "result_in_grams": "{{amount}} جرام"
 }
 
+    

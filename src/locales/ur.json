@@ -114,6 +114,8 @@
   "share_failed_copy_description": "شیئرنگ کام نہیں کر سکی، لہذا ہم نے نتائج کو آپ کے کلپ بورڈ پر کاپی کر دیا۔",
   "share_failed_title": "شیئرنگ ناکام ہوگئی",
   "share_failed_description": "نتائج کو شیئر یا کاپی نہیں کیا جا سکا۔",
-  "enter_value_prompt": "براہ کرم زکوٰۃ کا حساب لگانے کے لئے ایک قیمت درج کریں۔"
+  "enter_value_prompt": "براہ کرم زکوٰۃ کا حساب لگانے کے لئے ایک قیمت درج کریں۔",
+  "result_in_grams": "{{amount}} گرام"
 }
 
+    

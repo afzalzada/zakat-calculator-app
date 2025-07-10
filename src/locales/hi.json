@@ -114,6 +114,8 @@
   "share_failed_copy_description": "साझा करना काम नहीं कर रहा था, इसलिए हमने परिणामों को आपके क्लिपबोर्ड पर कॉपी कर दिया।",
   "share_failed_title": "साझा करना विफल रहा",
   "share_failed_description": "परिणामों को साझा या कॉपी नहीं किया जा सका।",
-  "enter_value_prompt": "ज़कात की गणना के लिए कृपया एक मान दर्ज करें।"
+  "enter_value_prompt": "ज़कात की गणना के लिए कृपया एक मान दर्ज करें।",
+  "result_in_grams": "{{amount}} ग्राम"
 }
 
+    

@@ -114,6 +114,8 @@
   "share_failed_copy_description": "اشتراک‌گذاری کار نکرد، بنابراین نتایج را در کلیپ‌بورد شما کپی کردیم.",
   "share_failed_title": "اشتراک‌گذاری ناموفق بود",
   "share_failed_description": "امکان اشتراک‌گذاری یا کپی نتایج وجود نداشت.",
-  "enter_value_prompt": "لطفاً برای محاسبه زکات یک مقدار وارد کنید."
+  "enter_value_prompt": "لطفاً برای محاسبه زکات یک مقدار وارد کنید.",
+  "result_in_grams": "{{amount}} گرم"
 }
 
+    

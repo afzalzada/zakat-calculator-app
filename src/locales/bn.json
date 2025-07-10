@@ -114,6 +114,8 @@
   "share_failed_copy_description": "শেয়ার করা কাজ করেনি, তাই আমরা ফলাফলগুলি আপনার ক্লিপবোর্ডে অনুলিপি করেছি।",
   "share_failed_title": "শেয়ার করতে ব্যর্থ",
   "share_failed_description": "ফলাফল শেয়ার বা অনুলিপি করা যায়নি।",
-  "enter_value_prompt": "যাকাত গণনা করতে একটি মান লিখুন।"
+  "enter_value_prompt": "যাকাত গণনা করতে একটি মান লিখুন।",
+  "result_in_grams": "{{amount}} গ্রাম"
 }
 
+    

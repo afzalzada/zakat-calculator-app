@@ -74,13 +74,11 @@ const GOLD_NISAB_GRAMS = 85;
 const SILVER_NISAB_GRAMS = 595;
 
 // Estimated prices per gram in USD.
-// These are used to calculate the Nisab value.
+// These are used to calculate the Nisab value for cash.
 const GOLD_PRICE_USD_PER_GRAM = 75;
-const SILVER_PRICE_USD_PER_GRAM = 1;
 
 // Nisab values in USD
 const goldNisabValue = GOLD_NISAB_GRAMS * GOLD_PRICE_USD_PER_GRAM;
-const silverNisabValue = SILVER_NISAB_GRAMS * SILVER_PRICE_USD_PER_GRAM;
 
 
 const assetIcons: Record<AssetType, React.ReactNode> = {
@@ -107,6 +105,8 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
   const [livestockType, setLivestockType] = React.useState<LivestockType>('sheep_goats');
   const [agriType, setAgriType] = React.useState<AgriType>('rain-fed');
+  const [zakatInGrams, setZakatInGrams] = React.useState<number | null>(null);
+
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
@@ -133,6 +133,7 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
       hawlMet: false,
     });
     setResult(null);
+    setZakatInGrams(null);
   }, [selectedAssetType, t, form, setResult]);
   
   const formatCurrency = React.useCallback((value: number) => {
@@ -192,6 +193,8 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     const { assetType, value, hawlMet } = values;
     let zakatLiability = 0;
     let explanation = "";
+    let zakatGrams: number | null = null;
+    
     // Note: Nisab for cash is based on the Gold standard.
     // For simplicity, we use a USD-based Nisab value.
     // A more advanced version could fetch conversion rates.
@@ -200,6 +203,7 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     if (value === 0) {
         explanation = t('enter_value_prompt');
         setResult({ zakatLiability: 0, explanation });
+        setZakatInGrams(null);
         return;
     }
 
@@ -211,11 +215,11 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
             } else if (!hawlMet) {
                 explanation = t('result_hawl_not_met');
             } else {
-                // Zakat is on the weight, so price is not needed for the 2.5% calc
                 const zakatWeight = goldWeight * 0.025;
+                zakatGrams = zakatWeight;
                 explanation = t('result_gold_success', { weight: zakatWeight.toFixed(2) });
-                // For display, we calculate monetary value, assuming a price.
-                zakatLiability = value * GOLD_PRICE_USD_PER_GRAM * 0.025;
+                // Zakat is in grams, no monetary liability calculated here.
+                zakatLiability = 0; 
             }
             break;
         case 'silver':
@@ -226,8 +230,10 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
                 explanation = t('result_hawl_not_met');
             } else {
                 const zakatWeight = silverWeight * 0.025;
+                zakatGrams = zakatWeight;
                 explanation = t('result_silver_success', { weight: zakatWeight.toFixed(2) });
-                zakatLiability = value * SILVER_PRICE_USD_PER_GRAM * 0.025;
+                // Zakat is in grams, no monetary liability calculated here.
+                zakatLiability = 0;
             }
             break;
         case 'cash':
@@ -265,7 +271,8 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
             explanation = t('result_rikaz_success');
             break;
     }
-
+    
+    setZakatInGrams(zakatGrams);
     setResult({ zakatLiability, explanation });
   }, [t, formatCurrency, getLivestockZakat, livestockType, agriType]);
 
@@ -286,12 +293,23 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
 
     doc.text("Zakat Calculation Summary", 105, 20, { align: "center" });
     doc.text(`Asset Type: ${t('asset_' + assetType)}`, 20, 40);
-    doc.text(`Currency: ${currency}`, 20, 50);
-
-    const zakatDisplay = result.zakatLiability > 0 
-        ? formatCurrency(result.zakatLiability)
-        : (assetType === 'livestock' ? 'See breakdown' : formatCurrency(0));
+    
+    let zakatDisplay = "";
+    if (zakatInGrams !== null) {
+        zakatDisplay = `${zakatInGrams.toFixed(2)} grams`;
+    } else if (result.zakatLiability > 0) {
+        zakatDisplay = formatCurrency(result.zakatLiability);
+    } else {
+        zakatDisplay = assetType === 'livestock' ? 'See breakdown' : formatCurrency(0);
+    }
+    
     doc.text(`Zakat Due: ${zakatDisplay}`, 20, 60);
+    if(assetType === 'gold' || assetType === 'silver') {
+      doc.text(`Currency: N/A`, 20, 50);
+    } else {
+       doc.text(`Currency: ${currency}`, 20, 50);
+    }
+
 
     const splitText = doc.splitTextToSize(result.explanation, 170);
     doc.text(splitText, 20, 80);
@@ -302,9 +320,15 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
   const handleShare = async () => {
     if (!result) return;
     const assetType = form.getValues('assetType');
-    const zakatDisplay = result.zakatLiability > 0 
-        ? formatCurrency(result.zakatLiability)
-        : (assetType === 'livestock' ? 'See breakdown' : formatCurrency(0));
+    
+    let zakatDisplay = "";
+    if (zakatInGrams !== null) {
+        zakatDisplay = `${zakatInGrams.toFixed(2)} grams`;
+    } else if (result.zakatLiability > 0) {
+        zakatDisplay = formatCurrency(result.zakatLiability);
+    } else {
+        zakatDisplay = assetType === 'livestock' ? 'See breakdown' : formatCurrency(0);
+    }
 
     const shareData = {
       title: "Zakat Calculation Result",
@@ -528,11 +552,16 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
               <div className="space-y-4">
                 <div>
                   <p className="text-muted-foreground">{t('result_due_for', { asset: t('asset_' + form.getValues('assetType')) })}</p>
-                    {selectedAssetType !== 'livestock' || result.zakatLiability > 0 ? (
-                    <p className="text-4xl font-bold text-chart-2">
-                        {formatCurrency(result.zakatLiability)}
-                    </p>
-                    ) : null}
+                    {zakatInGrams !== null ? (
+                      <p className="text-4xl font-bold text-chart-2">
+                        {t('result_in_grams', { amount: zakatInGrams.toFixed(2) })}
+                      </p>
+                    ) : result.zakatLiability > 0 ? (
+                      <p className="text-4xl font-bold text-chart-2">
+                          {formatCurrency(result.zakatLiability)}
+                      </p>
+                    ) : (selectedAssetType !== 'livestock' && <p className="text-4xl font-bold text-chart-2">{formatCurrency(0)}</p>)
+                    }
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">{t('result_breakdown')}</h4>
@@ -568,3 +597,5 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     </div>
   )
 }
+
+    
