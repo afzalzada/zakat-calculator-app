@@ -4,10 +4,9 @@ import { Faq } from "@/components/faq";
 import { Icons } from "@/components/icons";
 import { ZakatCalculator } from "@/components/zakat-calculator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { BuyMeACoffeeButton } from './buy-me-a-coffee-button';
 
 export function MainPage() {
   const { t } = useI18n();
@@ -57,12 +56,9 @@ export function MainPage() {
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                     {t('supportMessage')}
                 </p>
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <a href="https://www.paypal.com/donate?business=atiqullah_amiry@hotmail.com&no_recurring=0&item_name=Support+Zakat+Calculator&currency_code=USD" target="_blank" rel="noopener noreferrer">
-                        <Heart className="mr-2 h-5 w-5" />
-                        {t('donateButton')}
-                    </a>
-                </Button>
+                <div className="flex justify-center">
+                  <BuyMeACoffeeButton />
+                </div>
                  <p className="text-xs text-muted-foreground pt-2">{t('supportNote')}</p>
             </CardContent>
         </Card>
