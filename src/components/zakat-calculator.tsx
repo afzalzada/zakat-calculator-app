@@ -4,7 +4,7 @@
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { jsPDF } from "jspdf"
-import { TrendingUp, Wallet, Share, Download, Leaf, Store, Gem } from "lucide-react"
+import { TrendingUp, Wallet, Share, Download, Leaf, Store, Gem, Coffee } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -71,24 +71,48 @@ type FormValues = z.infer<typeof formSchema>
 
 const GOLD_NISAB_GRAMS = 85;
 const SILVER_NISAB_GRAMS = 595;
+
 const currencies = [
-    'AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 
-    'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 
-    'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF', 'CLP', 'CNY', 
-    'COP', 'CRC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 
-    'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'FOK', 'GBP', 'GEL', 'GGP', 'GHS', 
-    'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 
-    'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'IRR', 'ISK', 'JEP', 'JMD', 'JOD', 
-    'JPY', 'KES', 'KGS', 'KHR', 'KID', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 
-    'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 
-    'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 
-    'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 
-    'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 
-    'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLE', 'SLL', 'SOS', 'SRD', 
-    'SSP', 'STN', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 
-    'TTD', 'TVD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VES', 
-    'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XDR', 'XOF', 'XPF', 'YER', 'ZAR', 
-    'ZMW', 'ZWL'
+    // Major World Currencies
+    'USD', // US Dollar
+    'EUR', // Euro
+    'GBP', // British Pound
+    'CAD', // Canadian Dollar
+    'AUD', // Australian Dollar
+    'CHF', // Swiss Franc
+    'JPY', // Japanese Yen
+    'CNY', // Chinese Yuan
+    
+    // Currencies from Muslim-Majority Countries
+    'AED', // UAE Dirham
+    'AFN', // Afghan Afghani
+    'BDT', // Bangladeshi Taka
+    'BHD', // Bahraini Dinar
+    'BND', // Brunei Dollar
+    'DZD', // Algerian Dinar
+    'EGP', // Egyptian Pound
+    'IDR', // Indonesian Rupiah
+    'IQD', // Iraqi Dinar
+    'JOD', // Jordanian Dinar
+    'KWD', // Kuwaiti Dinar
+    'KZT', // Kazakhstani Tenge
+    'LBP', // Lebanese Pound
+    'LYD', // Libyan Dinar
+    'MAD', // Moroccan Dirham
+    'MVR', // Maldivian Rufiyaa
+    'MYR', // Malaysian Ringgit
+    'NGN', // Nigerian Naira
+    'OMR', // Omani Rial
+    'PKR', // Pakistani Rupee
+    'QAR', // Qatari Riyal
+    'SAR', // Saudi Riyal
+    'SDG', // Sudanese Pound
+    'SOS', // Somali Shilling
+    'SYP', // Syrian Pound
+    'TND', // Tunisian Dinar
+    'TRY', // Turkish Lira
+    'UZS', // Uzbekistani Som
+    'YER', // Yemeni Rial
 ];
 
 
@@ -580,5 +604,3 @@ export function ZakatCalculator() {
     </div>
   )
 }
-
-    
