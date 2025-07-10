@@ -333,228 +333,227 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <Card>
-          <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
-            <CardTitle className="font-headline text-3xl">{t('calculator_title')}</CardTitle>
-            <CardDescription className="text-primary-foreground/90">
-              {t('calculator_description')}
-            </CardDescription>
+    <div className="space-y-8 max-w-4xl mx-auto">
+      <Card>
+        <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
+          <CardTitle className="font-headline text-3xl">{t('calculator_title')}</CardTitle>
+          <CardDescription className="text-primary-foreground/90">
+            {t('calculator_description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="assetType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('asset_type_label')}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('asset_type_placeholder')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {assetTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                                <div className="flex items-center gap-2">
+                                    {assetIcons[type]}
+                                    {t(`asset_${type}`)}
+                                </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {selectedAssetType === 'livestock' && (
+                    <FormItem>
+                        <FormLabel>{t('livestock_type_label')}</FormLabel>
+                        <Select onValueChange={(value) => setLivestockType(value as LivestockType)} defaultValue={livestockType}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={t('livestock_type_placeholder')} />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="sheep_goats">{t('livestock_sheep_goats')}</SelectItem>
+                                <SelectItem value="cattle">{t('livestock_cattle')}</SelectItem>
+                                <SelectItem value="camels">{t('livestock_camels')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </FormItem>
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {selectedAssetType === 'gold' || selectedAssetType === 'silver'
+                          ? t('weight_in_grams_label')
+                          : selectedAssetType === 'livestock'
+                          ? t('number_of_animals_label')
+                          : t('asset_value_in_currency_label', { currency })}
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="e.g., 100" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {showHawl && (
+                  <FormField
+                    control={form.control}
+                    name="hawlMet"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('hawl_completed_label')}</FormLabel>
+                          <FormDescription>
+                            {t('hawl_description')}
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {selectedAssetType === 'agriculture' && (
+                    <FormItem>
+                        <FormLabel>{t('irrigation_method_label')}</FormLabel>
+                        <FormControl>
+                            <RadioGroup onValueChange={(value) => setAgriType(value as AgriType)} defaultValue={agriType} className="flex pt-2 gap-6">
+                                <FormItem className="flex items-center space-x-2">
+                                    <FormControl>
+                                        <RadioGroupItem value="rain-fed" id="rain-fed" />
+                                    </FormControl>
+                                    <Label htmlFor="rain-fed" className="font-normal cursor-pointer">{t('agri_rain_fed')}</Label>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-2">
+                                    <FormControl>
+                                        <RadioGroupItem value="artificially-irrigated" id="artificially-irrigated" />
+                                    </FormControl>
+                                    <Label htmlFor="artificially-irrigated" className="font-normal cursor-pointer">{t('agri_artificial')}</Label>
+                                </FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                    </FormItem>
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('notes_label')}</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder={t(`notes_placeholder_${selectedAssetType}`)} {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        {t('notes_description')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="madhab"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('madhab_label')}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('madhab_placeholder')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Hanafi">Hanafi</SelectItem>
+                          <SelectItem value="Maliki">Maliki</SelectItem>
+                          <SelectItem value="Shafi’i">Shafi’i</SelectItem>
+                          <SelectItem value="Hanbali">Hanbali</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        {t('madhab_description')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                {t('calculate_button')}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+      
+      <div className="space-y-4">
+        <Card className="min-h-[300px] flex flex-col">
+          <CardHeader className="bg-chart-2 text-primary-foreground rounded-t-lg">
+            <CardTitle className="font-headline text-2xl">{t('result_title')}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="assetType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('asset_type_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('asset_type_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {assetTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                  <div className="flex items-center gap-2">
-                                      {assetIcons[type]}
-                                      {t(`asset_${type}`)}
-                                  </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {selectedAssetType === 'livestock' && (
-                      <FormItem>
-                          <FormLabel>{t('livestock_type_label')}</FormLabel>
-                          <Select onValueChange={(value) => setLivestockType(value as LivestockType)} defaultValue={livestockType}>
-                              <FormControl>
-                                  <SelectTrigger>
-                                      <SelectValue placeholder={t('livestock_type_placeholder')} />
-                                  </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                  <SelectItem value="sheep_goats">{t('livestock_sheep_goats')}</SelectItem>
-                                  <SelectItem value="cattle">{t('livestock_cattle')}</SelectItem>
-                                  <SelectItem value="camels">{t('livestock_camels')}</SelectItem>
-                              </SelectContent>
-                          </Select>
-                      </FormItem>
-                  )}
-
-                  <FormField
-                    control={form.control}
-                    name="value"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {selectedAssetType === 'gold' || selectedAssetType === 'silver'
-                            ? t('weight_in_grams_label')
-                            : selectedAssetType === 'livestock'
-                            ? t('number_of_animals_label')
-                            : t('asset_value_in_currency_label', { currency })}
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 100" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {showHawl && (
-                    <FormField
-                      control={form.control}
-                      name="hawlMet"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                          <div className="space-y-0.5">
-                            <FormLabel>{t('hawl_completed_label')}</FormLabel>
-                            <FormDescription>
-                              {t('hawl_description')}
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  {selectedAssetType === 'agriculture' && (
-                      <FormItem>
-                          <FormLabel>{t('irrigation_method_label')}</FormLabel>
-                          <FormControl>
-                              <RadioGroup onValueChange={(value) => setAgriType(value as AgriType)} defaultValue={agriType} className="flex pt-2 gap-6">
-                                  <FormItem className="flex items-center space-x-2">
-                                      <FormControl>
-                                          <RadioGroupItem value="rain-fed" id="rain-fed" />
-                                      </FormControl>
-                                      <Label htmlFor="rain-fed" className="font-normal cursor-pointer">{t('agri_rain_fed')}</Label>
-                                  </FormItem>
-                                  <FormItem className="flex items-center space-x-2">
-                                      <FormControl>
-                                          <RadioGroupItem value="artificially-irrigated" id="artificially-irrigated" />
-                                      </FormControl>
-                                      <Label htmlFor="artificially-irrigated" className="font-normal cursor-pointer">{t('agri_artificial')}</Label>
-                                  </FormItem>
-                              </RadioGroup>
-                          </FormControl>
-                      </FormItem>
-                  )}
-
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('notes_label')}</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder={t(`notes_placeholder_${selectedAssetType}`)} {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          {t('notes_description')}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="madhab"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('madhab_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('madhab_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Hanafi">Hanafi</SelectItem>
-                            <SelectItem value="Maliki">Maliki</SelectItem>
-                            <SelectItem value="Shafi’i">Shafi’i</SelectItem>
-                            <SelectItem value="Hanbali">Hanbali</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          {t('madhab_description')}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  {t('calculate_button')}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-        <div className="space-y-4">
-          <Card className="min-h-[300px] flex flex-col">
-            <CardHeader className="bg-chart-2 text-primary-foreground rounded-t-lg">
-              <CardTitle className="font-headline text-2xl">{t('result_title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow pt-6">
-              {result && (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-muted-foreground">{t('result_due_for', { asset: t('asset_' + form.getValues('assetType')) })}</p>
-                     {selectedAssetType !== 'livestock' || result.zakatLiability > 0 ? (
-                      <p className="text-4xl font-bold text-chart-2">
-                          {formatCurrency(result.zakatLiability)}
-                      </p>
-                      ) : null}
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">{t('result_breakdown')}</h4>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {result.explanation}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {!result && (
-                <div className="flex items-center justify-center h-full text-center text-muted-foreground">
-                  <p>{t('result_placeholder')}</p>
-                </div>
-              )}
-            </CardContent>
+          <CardContent className="flex-grow pt-6">
             {result && (
-              <CardFooter className="flex gap-2">
-                <Button variant="outline" className="w-full" onClick={handleExportPdf}>
-                  <Download className="mr-2 h-4 w-4" />
-                  {t('export_pdf_button')}
-                </Button>
-                <Button variant="outline" className="w-full" onClick={handleShare}>
-                  <Share className="mr-2 h-4 w-4" />
-                  {t('share_button')}
-                </Button>
-              </CardFooter>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-muted-foreground">{t('result_due_for', { asset: t('asset_' + form.getValues('assetType')) })}</p>
+                    {selectedAssetType !== 'livestock' || result.zakatLiability > 0 ? (
+                    <p className="text-4xl font-bold text-chart-2">
+                        {formatCurrency(result.zakatLiability)}
+                    </p>
+                    ) : null}
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">{t('result_breakdown')}</h4>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {result.explanation}
+                  </p>
+                </div>
+              </div>
             )}
-          </Card>
-          <p className="text-xs text-muted-foreground px-4 text-center">
-              {t('calculator_disclaimer')}
-          </p>
-        </div>
+            {!result && (
+              <div className="flex items-center justify-center h-full text-center text-muted-foreground">
+                <p>{t('result_placeholder')}</p>
+              </div>
+            )}
+          </CardContent>
+          {result && (
+            <CardFooter className="flex gap-2">
+              <Button variant="outline" className="w-full" onClick={handleExportPdf}>
+                <Download className="mr-2 h-4 w-4" />
+                {t('export_pdf_button')}
+              </Button>
+              <Button variant="outline" className="w-full" onClick={handleShare}>
+                <Share className="mr-2 h-4 w-4" />
+                {t('share_button')}
+              </Button>
+            </CardFooter>
+          )}
+        </Card>
+        <p className="text-xs text-muted-foreground px-4 text-center">
+            {t('calculator_disclaimer')}
+        </p>
       </div>
     </div>
   )
