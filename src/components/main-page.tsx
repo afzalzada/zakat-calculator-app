@@ -6,7 +6,8 @@ import { ZakatCalculator } from "@/components/zakat-calculator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/hooks/use-i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import BuyMeACoffeeButton from './buy-me-a-coffee-button';
+import { Button } from './ui/button';
+import { Coffee } from 'lucide-react';
 
 export function MainPage() {
   const { t } = useI18n();
@@ -57,7 +58,11 @@ export function MainPage() {
                     {t('supportMessage')}
                 </p>
                 <div className="flex justify-center">
-                  <BuyMeACoffeeButton />
+                    <Button asChild size="lg" className="bg-[#FFDD00] text-black hover:bg-[#FFDD00]/90">
+                        <a href="https://www.buymeacoffee.com/afzalzada" target="_blank" rel="noopener noreferrer">
+                            <Coffee className="mr-2 h-5 w-5" /> {t('donateButton')}
+                        </a>
+                    </Button>
                 </div>
                  <p className="text-xs text-muted-foreground pt-2">{t('supportNote')}</p>
             </CardContent>
