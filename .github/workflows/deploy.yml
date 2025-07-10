@@ -45,6 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Upload the 'out' directory which `next build` with `output: 'export'` creates.
           path: './out'
       - name: Deploy to GitHub Pages
         id: deployment
