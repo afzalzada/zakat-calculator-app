@@ -378,7 +378,8 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-6">
-              <div className="space-y-4">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="assetType"
@@ -407,24 +408,6 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
                   )}
                 />
 
-                {selectedAssetType === 'livestock' && (
-                    <FormItem>
-                        <FormLabel>{t('livestock_type_label')}</FormLabel>
-                        <Select onValueChange={(value) => setLivestockType(value as LivestockType)} defaultValue={livestockType}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder={t('livestock_type_placeholder')} />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectItem value="sheep_goats">{t('livestock_sheep_goats')}</SelectItem>
-                                <SelectItem value="cattle">{t('livestock_cattle')}</SelectItem>
-                                <SelectItem value="camels">{t('livestock_camels')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </FormItem>
-                )}
-
                 <FormField
                   control={form.control}
                   name="value"
@@ -444,96 +427,110 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
                     </FormItem>
                   )}
                 />
+              </div>
 
-                {showHawl && (
-                  <FormField
+              {selectedAssetType === 'livestock' && (
+                  <FormItem>
+                      <FormLabel>{t('livestock_type_label')}</FormLabel>
+                      <Select onValueChange={(value) => setLivestockType(value as LivestockType)} defaultValue={livestockType}>
+                          <FormControl>
+                              <SelectTrigger>
+                                  <SelectValue placeholder={t('livestock_type_placeholder')} />
+                              </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              <SelectItem value="sheep_goats">{t('livestock_sheep_goats')}</SelectItem>
+                              <SelectItem value="cattle">{t('livestock_cattle')}</SelectItem>
+                              <SelectItem value="camels">{t('livestock_camels')}</SelectItem>
+                          </SelectContent>
+                      </Select>
+                  </FormItem>
+              )}
+
+              {selectedAssetType === 'agriculture' && (
+                  <FormItem>
+                      <FormLabel>{t('irrigation_method_label')}</FormLabel>
+                      <FormControl>
+                          <RadioGroup onValueChange={(value) => setAgriType(value as AgriType)} defaultValue={agriType} className="flex pt-2 gap-6">
+                              <FormItem className="flex items-center space-x-2">
+                                  <FormControl>
+                                      <RadioGroupItem value="rain-fed" id="rain-fed" />
+                                  </FormControl>
+                                  <Label htmlFor="rain-fed" className="font-normal cursor-pointer">{t('agri_rain_fed')}</Label>
+                              </FormItem>
+                              <FormItem className="flex items-center space-x-2">
+                                  <FormControl>
+                                      <RadioGroupItem value="artificially-irrigated" id="artificially-irrigated" />
+                                  </FormControl>
+                                  <Label htmlFor="artificially-irrigated" className="font-normal cursor-pointer">{t('agri_artificial')}</Label>
+                              </FormItem>
+                          </RadioGroup>
+                      </FormControl>
+                  </FormItem>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <FormField
                     control={form.control}
-                    name="hawlMet"
+                    name="madhab"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('hawl_completed_label')}</FormLabel>
-                          <FormDescription>
-                            {t('hawl_description')}
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
+                      <FormItem>
+                        <FormLabel>{t('madhab_label')}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('madhab_placeholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Hanafi">Hanafi</SelectItem>
+                            <SelectItem value="Maliki">Maliki</SelectItem>
+                            <SelectItem value="Shafi’i">Shafi’i</SelectItem>
+                            <SelectItem value="Hanbali">Hanbali</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
-
-                {selectedAssetType === 'agriculture' && (
-                    <FormItem>
-                        <FormLabel>{t('irrigation_method_label')}</FormLabel>
-                        <FormControl>
-                            <RadioGroup onValueChange={(value) => setAgriType(value as AgriType)} defaultValue={agriType} className="flex pt-2 gap-6">
-                                <FormItem className="flex items-center space-x-2">
-                                    <FormControl>
-                                        <RadioGroupItem value="rain-fed" id="rain-fed" />
-                                    </FormControl>
-                                    <Label htmlFor="rain-fed" className="font-normal cursor-pointer">{t('agri_rain_fed')}</Label>
-                                </FormItem>
-                                <FormItem className="flex items-center space-x-2">
-                                    <FormControl>
-                                        <RadioGroupItem value="artificially-irrigated" id="artificially-irrigated" />
-                                    </FormControl>
-                                    <Label htmlFor="artificially-irrigated" className="font-normal cursor-pointer">{t('agri_artificial')}</Label>
-                                </FormItem>
-                            </RadioGroup>
-                        </FormControl>
-                    </FormItem>
-                )}
-
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('notes_label')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t(`notes_placeholder_${selectedAssetType}`)} {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        {t('notes_description')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
+                  {showHawl && (
+                    <FormField
+                      control={form.control}
+                      name="hawlMet"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-7">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('hawl_completed_label')}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="madhab"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('madhab_label')}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('madhab_placeholder')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Hanafi">Hanafi</SelectItem>
-                          <SelectItem value="Maliki">Maliki</SelectItem>
-                          <SelectItem value="Shafi’i">Shafi’i</SelectItem>
-                          <SelectItem value="Hanbali">Hanbali</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        {t('madhab_description')}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
+              
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('notes_label')}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t(`notes_placeholder_${selectedAssetType}`)} {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      {t('notes_description')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className="w-full">
                 {t('calculate_button')}
               </Button>
@@ -597,5 +594,3 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     </div>
   )
 }
-
-    
