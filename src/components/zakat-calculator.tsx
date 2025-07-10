@@ -470,29 +470,6 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
               )}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <FormField
-                    control={form.control}
-                    name="madhab"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('madhab_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('madhab_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Hanafi">Hanafi</SelectItem>
-                            <SelectItem value="Maliki">Maliki</SelectItem>
-                            <SelectItem value="Shafi’i">Shafi’i</SelectItem>
-                            <SelectItem value="Hanbali">Hanbali</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   {showHawl && (
                     <FormField
                       control={form.control}
@@ -512,6 +489,29 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
                       )}
                     />
                   )}
+                <FormField
+                    control={form.control}
+                    name="madhab"
+                    render={({ field }) => (
+                      <FormItem className={!showHawl ? 'md:col-start-2' : ''}>
+                        <FormLabel>{t('madhab_label')}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('madhab_placeholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Hanafi">Hanafi</SelectItem>
+                            <SelectItem value="Maliki">Maliki</SelectItem>
+                            <SelectItem value="Shafi’i">Shafi’i</SelectItem>
+                            <SelectItem value="Hanbali">Hanbali</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
               </div>
               
               <FormField
