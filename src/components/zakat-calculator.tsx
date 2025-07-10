@@ -61,7 +61,7 @@ type AgriType = 'rain-fed' | 'artificially-irrigated';
 
 const formSchema = z.object({
   assetType: z.enum(assetTypes),
-  value: z.coerce.number().min(0, { message: "Value must be positive." }),
+  value: z.coerce.number().min(0, { message: "Value must be positive." }).optional().transform(val => val ?? 0),
   notes: z.string().optional(),
   madhab: z.enum(['Hanafi', 'Maliki', 'Shafi’i', 'Hanbali']),
   hawlMet: z.boolean().default(false),
@@ -122,6 +122,18 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
 
   const selectedAssetType = form.watch("assetType");
   const showHawl = assetsWithHawl.includes(selectedAssetType);
+
+  React.useEffect(() => {
+    // Reset form fields and result when asset type or language changes
+    form.reset({
+      assetType: selectedAssetType,
+      value: 0,
+      notes: "",
+      madhab: "Hanafi",
+      hawlMet: false,
+    });
+    setResult(null);
+  }, [selectedAssetType, t, form, setResult]);
   
   const formatCurrency = (value: number) => {
     try {
@@ -185,6 +197,12 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     // A more advanced version could fetch conversion rates.
     const cashNisab = goldNisabValue;
 
+    if (value === 0) {
+        explanation = t('enter_value_prompt');
+        setResult({ zakatLiability: 0, explanation });
+        return;
+    }
+
     switch (assetType) {
         case 'gold':
             const goldWeight = value;
@@ -195,7 +213,7 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
             } else {
                 // Zakat is on the weight, so price is not needed for the 2.5% calc
                 const zakatWeight = goldWeight * 0.025;
-                explanation = t('result_gold_success', { weight: zakatWeight });
+                explanation = t('result_gold_success', { weight: zakatWeight.toFixed(2) });
                 // For display, we calculate monetary value, assuming a price.
                 zakatLiability = value * GOLD_PRICE_USD_PER_GRAM * 0.025;
             }
@@ -208,7 +226,7 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
                 explanation = t('result_hawl_not_met');
             } else {
                 const zakatWeight = silverWeight * 0.025;
-                explanation = t('result_silver_success', { weight: zakatWeight });
+                explanation = t('result_silver_success', { weight: zakatWeight.toFixed(2) });
                 zakatLiability = value * SILVER_PRICE_USD_PER_GRAM * 0.025;
             }
             break;
@@ -541,5 +559,3 @@ export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
     </div>
   )
 }
-
-    

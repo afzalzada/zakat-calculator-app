@@ -48,13 +48,6 @@
   "madhab_placeholder": "Select a Madhab",
   "madhab_description": "Note: Madhab selection primarily affects fiqhi details in the Q&A. Core calculation rules are standard.",
   "calculate_button": "Calculate Zakat",
-  "market_prices_title": "Currency & Market Prices",
-  "market_prices_description": "For accurate calculations, select your currency and update the gold/silver prices to reflect current market rates. Default values are provided as an estimate.",
-  "currency_label": "Currency",
-  "currency_placeholder": "Select currency",
-  "gold_price_label": "Gold Price / gram ({{currency}})",
-  "silver_price_label": "Silver Price / gram ({{currency}})",
-  "nisab_label": "Nisab",
   "result_title": "Your Zakat Liability",
   "result_due_for": "Zakat Due for {{asset}}",
   "result_breakdown": "Calculation Breakdown",
@@ -120,6 +113,7 @@
   "copied_to_clipboard_description": "Calculation results have been copied to your clipboard.",
   "share_failed_copy_description": "Sharing didn't work, so we copied the results to your clipboard.",
   "share_failed_title": "Sharing Failed",
-  "share_failed_description": "Could not share or copy the results."
+  "share_failed_description": "Could not share or copy the results.",
+  "enter_value_prompt": "Please enter a value to calculate Zakat."
 }
-    
+
