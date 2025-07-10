@@ -82,15 +82,16 @@
   "chatbot_sr_send": "Send",
   "result_gold_below_nisab": "Your gold possession ({{weight}}g) is below the Nisab threshold of {{nisab}}g. No Zakat is due.",
   "result_hawl_not_met": "The Hawl (one lunar year) has not been met. No Zakat is due.",
-  "result_gold_success": "Nisab and Hawl are met. The total value of your gold is {{value}}. Zakat is calculated at 2.5% of this value.",
+  "result_gold_success": "Nisab and Hawl are met. The Zakat due is 2.5% of your total gold weight, which is {{weight}} grams. The monetary value will depend on the current gold price.",
   "result_silver_below_nisab": "Your silver possession ({{weight}}g) is below the Nisab threshold of {{nisab}}g. No Zakat is due.",
-  "result_silver_success": "Nisab and Hawl are met. The total value of your silver is {{value}}. Zakat is calculated at 2.5% of this value.",
+  "result_silver_success": "Nisab and Hawl are met. The Zakat due is 2.5% of your total silver weight, which is {{weight}} grams. The monetary value will depend on the current silver price.",
   "result_cash_below_nisab": "Asset value ({{value}}) is below the Nisab of {{nisab}} (based on gold). No Zakat is due.",
   "result_cash_success": "Nisab and Hawl are met. Zakat is calculated at 2.5% of the asset value.",
   "result_livestock_below_nisab": "The number of animals ({{count}}) is below the Nisab for {{type}}. No Zakat is due.",
   "result_livestock_success": "For {{count}} {{type}}, the Zakat due is: {{due}}.\\n\\nNote: This is a non-monetary calculation. Please consult a scholar for the monetary equivalent if you wish to pay in cash.",
   "result_agriculture_success": "Zakat on agricultural produce (Ushr) does not have a Hawl requirement and is calculated on the harvest value. The rate is {{rate}}% for {{type}} land. Nisab for agriculture is approx. 653kg; it's assumed your harvest exceeds this.",
   "result_rikaz_success": "Zakat on Rikaz (found treasure) is a flat rate of 20%, with no Nisab or Hawl requirement.",
+  "livestock_result_none": "0",
   "livestock_sheep_1": "1 sheep",
   "livestock_sheep_2": "2 sheep",
   "livestock_sheep_3": "3 sheep",
@@ -121,5 +122,4 @@
   "share_failed_title": "Sharing Failed",
   "share_failed_description": "Could not share or copy the results."
 }
-
     

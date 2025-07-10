@@ -69,29 +69,18 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+// Nisab values in grams
 const GOLD_NISAB_GRAMS = 85;
 const SILVER_NISAB_GRAMS = 595;
 
-const currencies = [
-    'USD', // US Dollar
-    'EUR', // Euro
-    'GBP', // British Pound
-    'CAD', // Canadian Dollar
-    'AUD', // Australian Dollar
-    'SAR', // Saudi Riyal
-    'AED', // UAE Dirham
-    'QAR', // Qatari Riyal
-    'KWD', // Kuwaiti Dinar
-    'BHD', // Bahraini Dinar
-    'OMR', // Omani Rial
-    'TRY', // Turkish Lira
-    'PKR', // Pakistani Rupee
-    'BDT', // Bangladeshi Taka
-    'INR', // Indian Rupee
-    'IDR', // Indonesian Rupiah
-    'MYR', // Malaysian Ringgit
-    'AFN', // Afghan Afghani
-];
+// Estimated prices per gram in USD.
+// These are used to calculate the Nisab value.
+const GOLD_PRICE_USD_PER_GRAM = 75;
+const SILVER_PRICE_USD_PER_GRAM = 1;
+
+// Nisab values in USD
+const goldNisabValue = GOLD_NISAB_GRAMS * GOLD_PRICE_USD_PER_GRAM;
+const silverNisabValue = SILVER_NISAB_GRAMS * SILVER_PRICE_USD_PER_GRAM;
 
 
 const assetIcons: Record<AssetType, React.ReactNode> = {
@@ -109,18 +98,16 @@ const assetsWithHawl: AssetType[] = [
   'gold', 'silver', 'cash', 'investments', 'business', 'livestock'
 ];
 
-export function ZakatCalculator() {
+interface ZakatCalculatorProps {
+  currency: string;
+}
+
+export function ZakatCalculator({ currency }: ZakatCalculatorProps) {
   const { t } = useI18n();
   const [result, setResult] = React.useState<CalculateZakatForAssetOutput | null>(null)
-  const [currency, setCurrency] = React.useState('USD');
-  const [goldPrice, setGoldPrice] = React.useState(75);
-  const [silverPrice, setSilverPrice] = React.useState(1);
   const [livestockType, setLivestockType] = React.useState<LivestockType>('sheep_goats');
   const [agriType, setAgriType] = React.useState<AgriType>('rain-fed');
   const { toast } = useToast()
-
-  const goldNisabValue = GOLD_NISAB_GRAMS * goldPrice;
-  const silverNisabValue = SILVER_NISAB_GRAMS * silverPrice;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -152,13 +139,13 @@ export function ZakatCalculator() {
   const getLivestockZakat = (count: number, type: LivestockType): string => {
     switch (type) {
         case 'sheep_goats':
-            if (count < 40) return "0";
+            if (count < 40) return t('livestock_result_none');
             if (count <= 120) return t('livestock_sheep_1');
             if (count <= 200) return t('livestock_sheep_2');
             if (count <= 399) return t('livestock_sheep_3');
             return t('livestock_sheep_4', { count: Math.floor(count / 100) });
         case 'cattle':
-            if (count < 30) return "0";
+            if (count < 30) return t('livestock_result_none');
             if (count <= 39) return t('livestock_cattle_1');
             if (count <= 59) return t('livestock_cattle_2');
             if (count <= 69) return t('livestock_cattle_3');
@@ -173,7 +160,7 @@ export function ZakatCalculator() {
             }
             return t('livestock_complex');
         case 'camels':
-            if (count < 5) return "0";
+            if (count < 5) return t('livestock_result_none');
             if (count <= 9) return t('livestock_camels_1');
             if (count <= 14) return t('livestock_camels_2');
             if (count <= 19) return t('livestock_camels_3');
@@ -185,7 +172,7 @@ export function ZakatCalculator() {
             if (count <= 90) return t('livestock_camels_9');
             if (count <= 120) return t('livestock_camels_10');
             if (count > 120) return t('livestock_camels_11');
-            return "0";
+            return t('livestock_result_none');
     }
   }
 
@@ -193,31 +180,36 @@ export function ZakatCalculator() {
     const { assetType, value, hawlMet } = values;
     let zakatLiability = 0;
     let explanation = "";
+    // Note: Nisab for cash is based on the Gold standard.
+    // For simplicity, we use a USD-based Nisab value.
+    // A more advanced version could fetch conversion rates.
     const cashNisab = goldNisabValue;
 
     switch (assetType) {
         case 'gold':
             const goldWeight = value;
-            const totalGoldValue = goldWeight * goldPrice;
             if (goldWeight < GOLD_NISAB_GRAMS) {
                 explanation = t('result_gold_below_nisab', { weight: goldWeight, nisab: GOLD_NISAB_GRAMS });
             } else if (!hawlMet) {
                 explanation = t('result_hawl_not_met');
             } else {
-                zakatLiability = totalGoldValue * 0.025;
-                explanation = t('result_gold_success', { value: formatCurrency(totalGoldValue) });
+                // Zakat is on the weight, so price is not needed for the 2.5% calc
+                const zakatWeight = goldWeight * 0.025;
+                explanation = t('result_gold_success', { weight: zakatWeight });
+                // For display, we calculate monetary value, assuming a price.
+                zakatLiability = value * GOLD_PRICE_USD_PER_GRAM * 0.025;
             }
             break;
         case 'silver':
             const silverWeight = value;
-            const totalSilverValue = silverWeight * silverPrice;
-            if (silverWeight < SILVER_NISAB_GRAMS) {
+             if (silverWeight < SILVER_NISAB_GRAMS) {
                 explanation = t('result_silver_below_nisab', { weight: silverWeight, nisab: SILVER_NISAB_GRAMS });
             } else if (!hawlMet) {
                 explanation = t('result_hawl_not_met');
             } else {
-                zakatLiability = totalSilverValue * 0.025;
-                explanation = t('result_silver_success', { value: formatCurrency(totalSilverValue) });
+                const zakatWeight = silverWeight * 0.025;
+                explanation = t('result_silver_success', { weight: zakatWeight });
+                zakatLiability = value * SILVER_PRICE_USD_PER_GRAM * 0.025;
             }
             break;
         case 'cash':
@@ -236,7 +228,7 @@ export function ZakatCalculator() {
             const animalCount = Math.floor(value);
             const zakatDueInAnimals = getLivestockZakat(animalCount, livestockType);
             zakatLiability = 0; // Monetary value is not calculated here.
-            if (zakatDueInAnimals === "0") {
+            if (zakatDueInAnimals === t('livestock_result_none')) {
                 explanation = t('result_livestock_below_nisab', { count: animalCount, type: t(`livestock_${livestockType}`) });
             } else if (!hawlMet) {
                  explanation = t('result_hawl_not_met');
@@ -324,39 +316,6 @@ export function ZakatCalculator() {
 
   return (
     <div className="space-y-8">
-      <Card>
-          <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
-              <CardTitle>{t('market_prices_title')}</CardTitle>
-              <CardDescription className="text-primary-foreground/90">
-                  {t('market_prices_description')}
-              </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-6">
-                <div className="space-y-2">
-                  <Label htmlFor="currency">{t('currency_label')}</Label>
-                  <Select onValueChange={setCurrency} defaultValue={currency}>
-                      <SelectTrigger id="currency">
-                          <SelectValue placeholder={t('currency_placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                          {currencies.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                      </SelectContent>
-                  </Select>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                      <Label htmlFor="gold-price">{t('gold_price_label', { currency })}</Label>
-                      <Input id="gold-price" type="number" value={goldPrice} onChange={(e) => setGoldPrice(parseFloat(e.target.value) || 0)} />
-                      <p className="text-xs text-muted-foreground">{t('nisab_label')}: {formatCurrency(goldNisabValue)}</p>
-                  </div>
-                  <div className="space-y-2">
-                      <Label htmlFor="silver-price">{t('silver_price_label', { currency })}</Label>
-                      <Input id="silver-price" type="number" value={silverPrice} onChange={(e) => setSilverPrice(parseFloat(e.target.value) || 0)} />
-                      <p className="text-xs text-muted-foreground">{t('nisab_label')}: {formatCurrency(silverNisabValue)}</p>
-                  </div>
-              </div>
-          </CardContent>
-      </Card>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <Card>
           <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">

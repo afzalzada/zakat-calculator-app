@@ -3,15 +3,22 @@ import * as React from 'react';
 import { Faq } from "@/components/faq";
 import { Icons } from "@/components/icons";
 import { ZakatCalculator } from "@/components/zakat-calculator";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/hooks/use-i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from './ui/button';
 import { Coffee } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+const currencies = [
+    'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'SAR', 'AED', 'PKR', 'BDT', 'INR', 'IDR', 'MYR', 'TRY', 'QAR', 'KWD', 'AFN'
+];
 
 export function MainPage() {
   const { t } = useI18n();
   const [year, setYear] = React.useState(new Date().getFullYear());
+  const [currency, setCurrency] = React.useState('USD');
+
 
   React.useEffect(() => {
     setYear(new Date().getFullYear());
@@ -20,8 +27,16 @@ export function MainPage() {
   return (
     <main className="container mx-auto p-4 md:p-8 space-y-12">
       <header className="relative mb-8">
-        <div className="absolute top-0 right-0 z-10">
-          <LanguageSwitcher />
+        <div className="absolute top-0 right-0 z-10 flex items-center gap-2">
+            <Select onValueChange={setCurrency} defaultValue={currency}>
+              <SelectTrigger id="currency-main" className="w-[80px]">
+                  <SelectValue placeholder="USD" />
+              </SelectTrigger>
+              <SelectContent>
+                  {currencies.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <LanguageSwitcher />
         </div>
         
         <div className="text-center pt-14 md:pt-0">
@@ -38,7 +53,7 @@ export function MainPage() {
       </header>
 
       <section>
-        <ZakatCalculator />
+        <ZakatCalculator currency={currency} />
       </section>
 
       <section>
